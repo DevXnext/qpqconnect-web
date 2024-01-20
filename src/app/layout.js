@@ -5,8 +5,8 @@ import Header from "@/components/header/page";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  // title: 'QPQ Connect',
-  // description: 'A trade platform',
+  title: 'QPQ Connect',
+  description: 'A trade platform',
 };
 
 export default function RootLayout({ children }) {

@@ -69,14 +69,14 @@ const DashboardTop = () => {
           <div className="flex flex-row space-x-5 items-center ">
             <Image src="/user-icon.png" height={65} width={65} alt="Admin" />
             <div className=" flex flex-col space-y-1">
-              <p className="text-xl font-semibold">John Deo</p>
+              <p className="text-xl font-semibold">Mehul Patel</p>
               <span className="text-gray-400 text-base">Manager</span>
             </div>
           </div>
           <div className="flex flex-row space-x-5 items-center ">
             <Image src="/user-icon.png" height={65} width={65} alt="Admin" />
             <div className=" flex flex-col space-y-1">
-              <p className="text-xl font-semibold">John Deo</p>
+              <p className="text-xl font-semibold">Durgesh Pueskar</p>
               <span className="text-gray-400 text-base">Manager</span>
             </div>
           </div>

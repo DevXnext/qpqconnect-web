@@ -1,8 +1,54 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useRef } from "react";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
+import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 
 const ProfileBusinessMedia = () => {
+
+  const storage = getStorage();
+  const auth = getAuth();
+
+
+  const handleUpload = async () => {
+    try {
+      // Upload single logo image
+      if (selectedImage) {
+        const logoImageRef = ref(storage, `companyLogos/${auth.currentUser.uid}`);
+        await uploadString(logoImageRef, selectedImage, "data_url");
+        const logoImageUrl = await getDownloadURL(logoImageRef);
+        console.log("Logo Image URL:", logoImageUrl);
+      }
+
+      // Upload multiple complex images
+      for (const complexImage of selectedComplexImages) {
+        const complexImageRef = ref(storage, `complexImages/${auth.currentUser.uid}/${complexImage.id}`);
+        await uploadString(complexImageRef, complexImage.src, "data_url");
+        const complexImageUrl = await getDownloadURL(complexImageRef);
+        console.log(`Complex Image (${complexImage.id}) URL:`, complexImageUrl);
+      }
+
+      // Clear selected images after successful upload
+      setSelectedImage(null);
+      setSelectedComplexImages([]);
+
+      // TODO: Add logic to save image URLs to the user's data in Firestore
+      // This step would typically involve updating the user document in Firestore
+      // with the URLs of the uploaded images for later retrieval
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      // TODO: Handle the error and provide feedback to the user
+    }
+  };
+
+  const handleReset = () => {
+    // Clear selected images without uploading
+    setSelectedImage(null);
+    setSelectedComplexImages([]);
+  };
+
+
   const [selectedImage, setSelectedImage] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -131,7 +177,7 @@ const ProfileBusinessMedia = () => {
               ref={fileInputRef}
             />
             <label
-              htmlFor="fileInput"
+              htmlFor="fileInput"   
               className="cursor-pointer text-gray-500"
             >
               Click or drag-and-drop to upload
@@ -193,9 +239,9 @@ const ProfileBusinessMedia = () => {
     </div>
   </div>
   <div className="flex flex-row space-x-6">
-    <button className="bg-black px-8 py-2 rounded-lg text-1xl  font-semibold
+    <button  onClick={handleUpload} className="bg-black px-8 py-2 rounded-lg text-1xl  font-semibold
     hover:bg-white hover:border-black hover:text-black border-2 text-white">Upload</button>
-    <button className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
+    <button onClick={handleReset} className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
     hover:bg-black border-black hover:text-white border-2 text-black">Reset</button>
   </div>
 </div>

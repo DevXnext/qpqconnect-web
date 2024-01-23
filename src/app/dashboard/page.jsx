@@ -5,12 +5,15 @@ import DashboardSubscription from "@/components/dashboard-subscription/page";
 import DashboardTable from "@/components/dashboard-table/page";
 import DashboardTop from "@/components/dashboard-top/page";
 import React from "react";
+import withAuth from "../lib/auth/page";
+
 
 const Dashboard = () => {
+
   return (
     <>
       <div className=" flex flex-col space-y-8 p-4">
-        <DashboardTop />
+        <DashboardTop  />
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="basis-1/2 p-4 rounded-md hover:shadow-xl shadow bg-white">
             <Insights />
@@ -26,4 +29,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default withAuth(Dashboard);

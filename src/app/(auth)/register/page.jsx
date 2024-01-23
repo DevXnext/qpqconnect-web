@@ -1,7 +1,9 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState , useRef} from "react";
+import React, { useState, useRef } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import {
   getFirestore,
   collection,
@@ -15,21 +17,19 @@ import {
 import { app } from "../../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 const Register = () => {
   const [companyName, setCompanyName] = useState("");
-  const [countryCode, setCountryCode] = useState("+1");
+  // const [countryCode, setCountryCode] = useState("+1");
   const [mobileNumber, setMobileNumber] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
-  const formRef = useRef(); 
+  const formRef = useRef();
   const router = useRouter();
- 
-  const registerUser = async (
-    companyName,
-    countryCode,
-    mobileNumber,
-    emailAddress
-  ) => {
+  const generateAccessToken = () => {
+    return uuidv4();
+  };
+  const registerUser = async (companyName, mobileNumber, emailAddress) => {
     try {
       const db = getFirestore(app);
       const usersCollection = collection(db, "users");
@@ -50,12 +50,11 @@ const Register = () => {
       //Mobile
       const duplicateMobileQuery = query(
         usersCollection,
-        where("mobileNumber", "==", `${countryCode}${mobileNumber}`)
+        where("mobileNumber", "==", mobileNumber)
       );
       const duplicateMobileSnapshot = await getDocs(duplicateMobileQuery);
 
       if (duplicateMobileSnapshot.docs.length > 0) {
-       
         toast.error("User with the same Mobile Number already exists");
         return;
       }
@@ -68,24 +67,27 @@ const Register = () => {
       const duplicateEmailSnapshot = await getDocs(duplicateEmailQuery);
 
       if (duplicateEmailSnapshot.docs.length > 0) {
-        
         toast.error("User with the same Email address already exists");
         return;
       }
 
+      const accessToken = generateAccessToken();
+
       const userDocRef = await addDoc(usersCollection, {
         companyName,
-        mobileNumber: `${countryCode}${mobileNumber}`,
+        mobileNumber,
         emailAddress,
+        accessToken,
         timestamp: serverTimestamp(),
       });
 
       toast.success("Company Registered successfully", {
         onClose: () => {
-          router.push(`/dashboard?companyName=${companyName}&mobileNumber=${mobileNumber}&countryCode=${countryCode}`);
+          router.push(
+            `/login?companyName=${companyName}&mobileNumber=${mobileNumber}&emailAddress=${emailAddress}`
+          );
         },
       });
-  
     } catch (error) {
       console.error("Error registering user:", error);
       toast.error("Error registering user. Please try again later.");
@@ -95,15 +97,12 @@ const Register = () => {
   const handleRegister = (e) => {
     e.preventDefault();
 
-   
     if (formRef.current.checkValidity()) {
-      registerUser(companyName, countryCode, mobileNumber, emailAddress);
+      registerUser(companyName, mobileNumber, emailAddress);
     } else {
-     
       toast.error("Please fill in all required fields.");
     }
   };
-
 
   return (
     <>
@@ -140,23 +139,44 @@ const Register = () => {
                 </span>
               </div>
               <form ref={formRef} onSubmit={handleRegister}>
-              <div className="flex flex-col space-y-3">
-                <div className="flex flex-col space-y-3 ">
-                  <label className="text-1xl font-semibold">Company Name</label>
-                  <input
-                    type="text"
-                    name="companyName"
-                    className="border border-gray-300 rounded-md h-12 p-3"
-                    placeholder="QPQ Connect"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)} required
-                  />
-                </div>
-                <div className="flex flex-col space-y-3 ">
-                  <label className="text-1xl font-semibold">
-                    Mobile Number
-                  </label>
-                  <div className="flex flex-row space-x-2">
+                <div className="flex flex-col space-y-3">
+                  <div className="flex flex-col space-y-3 ">
+                    <label className="text-1xl font-semibold">
+                      Company Name
+                    </label>
+                    <input
+                      type="text"
+                      name="companyName"
+                      className="border border-gray-300 rounded-md h-12 p-3"
+                      placeholder="QPQ Connect"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-3 ">
+                    <label className="text-1xl font-semibold">
+                      Mobile Number
+                    </label>
+                    <PhoneInput
+                      containerStyle={{}}
+                      inputStyle={{
+                        height: "3rem",
+                        paddingLeft: "3rem",
+                        fontSize: "1rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "0.25rem",
+                        width: "100%",
+                      }}
+                      buttonStyle={{}}
+                      dropdownStyle={{}}
+                      country={"us"}
+                      value={mobileNumber}
+                      onChange={(mobileNumber) =>
+                        setMobileNumber("+" + mobileNumber)
+                      }
+                    />
+                    {/* <div className="flex flex-row space-x-2">
                     <div className="basis-[12%]">
                       <select
                         className="border border-gray-300 rounded-md w-full h-12 "
@@ -179,38 +199,38 @@ const Register = () => {
                         onChange={(e) => setMobileNumber(e.target.value)} required
                       /> 
                     </div>
+                  </div> */}
+                  </div>
+                  <div className="flex flex-col space-y-3 ">
+                    <label className="text-1xl font-semibold">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="EmailAddress"
+                      className="border border-gray-300 rounded-md h-12 p-3"
+                      placeholder="qpq@connect.com"
+                      value={emailAddress}
+                      onChange={(e) => setEmailAddress(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex py-5 flex-col space-y-5">
+                    <button
+                      type="submit"
+                      className="text-center bg-black w-full text-white p-3 rounded-lg hover:bg-gray-800"
+                    >
+                      Create an account
+                    </button>
+                    <Link
+                      href="./login"
+                      className="text-base text-gray-400 hover:text-gray-800 cursor-pointer"
+                    >
+                      Already have an account ? Sign In
+                    </Link>
                   </div>
                 </div>
-                <div className="flex flex-col space-y-3 ">
-                  <label className="text-1xl font-semibold">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="EmailAddress"
-                    className="border border-gray-300 rounded-md h-12 p-3"
-                    placeholder="qpq@connect.com"
-                    value={emailAddress}
-                    onChange={(e) => setEmailAddress(e.target.value)} required
-                  />
-                </div>
-                <div className="flex py-5 flex-col space-y-5">
-                  <button
-                  type="submit"
-                    className="text-center bg-black w-full text-white p-3 rounded-lg hover:bg-gray-800"
-                  >
-                    Create an account
-                  </button>
-                  <Link
-                    href="./login"
-                    className="text-base text-gray-400 hover:text-gray-800 cursor-pointer"
-                  >
-                    Already have an account ? Sign In
-                  </Link>
-                </div>
-              </div>
               </form>
-              
             </div>
             <ToastContainer
               position="top-right"

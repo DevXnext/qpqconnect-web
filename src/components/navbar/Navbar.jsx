@@ -1,22 +1,56 @@
-import React from "react";
-
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
+import { getAuth, signOut } from "firebase/auth";
+import cookie from 'js-cookie';
 const Navbar = () => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const router = useRouter();
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
+
+  const closeMenu = () => {
+    setMenuVisible(false);
+  };
+  const handleLogout = async () => {
+    
+
+    try {
+      cookie.remove('access_token');
+      toast.success("Logout Successfully!", {
+        onClose: () => {
+          router.push("../login");
+        },
+      });
+      
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+    }
+  };
   return (
     <>
-      <>
-        <div className="flex flex-row justify-between p-5 ">
-          <div>
-            <p className="font-semibold text-2xl">Welcome Gorge</p>
-          </div> 
-          <div className="flex flex-row space-x-3">
-          <div >
+    <div className="bg-white  ">
+    <div
+        className="flex flex-row  justify-between p-5 border-b  pb-2 mb-2 border-gray-150 "
+      >
+        <div className="items-center ">
+          <p className="font-semibold text-2xl">Welcome Gorge</p>
+        </div>
+
+        <div className="flex flex-row space-x-3 ">
+          <div className="items-center  flex">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-8 h-8"
+              className="w-8 h-8 font-bold"
             >
               <path
                 strokeLinecap="round"
@@ -26,25 +60,70 @@ const Navbar = () => {
             </svg>
           </div>
           <div>
+            <Image
+              src="/icon/Avatar.svg"
+              width={45}
+              height={45}
+              alt="Avatar"
+              className=" object-center "
+            />
+          </div>
+          <div className="items-center  flex ">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-8 h-8"
+              className="w-6 h-6 font-bold"
+              onClick={toggleMenu}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                d="m19.5 8.25-7.5 7.5-7.5-7.5"
               />
             </svg>
           </div>
-          </div>
-          
         </div>
-      </>
+      </div>
+      <div>
+        {menuVisible && (
+          <div className="absolute right-0 mt-2 bg-white w-fit  text-black p-3 rounded-md shadow-md">
+            <Link href="/dashboard">
+              <p
+                className="block text-[18px] py-2 px-4 rounded-md hover:bg-gray-200"
+                
+              >
+                Your Store
+              </p>
+            </Link>
+          
+              <button type="submit"
+                className="block text-[18px] py-2 px-4 rounded-md hover:bg-gray-200 cursor-pointer"
+                onClick={() => {
+                  handleLogout();
+                  closeMenu();
+                }}
+              >
+                Logout
+              </button>
+      
+          </div>
+        )}
+      </div>
+    </div>
+    <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
     </>
   );
 };

@@ -1,11 +1,11 @@
 "use client"
 
 import ProfileBusinessForm from "@/components/profile-business-form/page";
-import BusinessListing from "@/components/profile-business-listing/page";
 import ProfileBusinessMedia from "@/components/profile-business-media/page";
-
+import withAuth from "../../lib/auth/page";
 import Link from "next/link";
 import React from "react";
+import ProfileMedia from "@/components/profile-media/page";
 
 const Profile = () => {
   return (
@@ -18,11 +18,11 @@ const Profile = () => {
           <ProfileBusinessMedia />
         </div>
         <div>
-          <BusinessListing />
+          <ProfileMedia />
         </div>
       </div>
     </>
   );
 };
 
-export default Profile;
+export default withAuth(Profile);

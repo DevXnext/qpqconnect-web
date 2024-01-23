@@ -1,26 +1,33 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getFirestore, collection, orderBy, query, limit, getDocs } from "firebase/firestore";
+import { getFirestore, collection,  query, where,  getDocs } from "firebase/firestore";
 import { app } from "../../app/firebase";
+import { parseCookies } from 'nookies';
+import Link from "next/link";
 
-const DashboardTop = () => {
-  const [latestUserData, setLatestUserData] = useState(null);
+const DashboardTop = ({ access_token }) => {
+  const [loggedInUserData, setLoggedInUserData] = useState(null);
 
   useEffect(() => {
+    const cookies = parseCookies();
+
+    // Retrieve the access_token from cookies
+    const user_access_token = cookies.user_access_token;
+    if (user_access_token) {
     const fetchLatestUserData = async () => {
       try {
         const userCollectionRef = collection(getFirestore(app), "users");
-        const userQuery = query(userCollectionRef, orderBy("timestamp", "desc"), limit(1));
+        const userQuery = query(userCollectionRef, where('accessToken', '==', user_access_token));
         const userQuerySnapshot = await getDocs(userQuery);
-        console.log("User Query Snapshot:", userQuerySnapshot);
-        userQuerySnapshot.forEach((doc) => {
-          console.log("User Data:", doc.data());
-        });
+
+        // console.log("User Query Snapshot:", userQuerySnapshot);
+
+        
         if (!userQuerySnapshot.empty) {
           // Found the latest user, extract user data
-          const latestUserDoc = userQuerySnapshot.docs[0];
-          setLatestUserData(latestUserDoc.data());
-          console.log(latestUserDoc.data());
+          const loggedInUserDoc = userQuerySnapshot.docs[0];
+          setLoggedInUserData(loggedInUserDoc.data());
+          console.log(loggedInUserDoc.data());
         } else {
           console.log("No users found");
         }
@@ -28,8 +35,12 @@ const DashboardTop = () => {
         console.error("Error fetching latest user data:", error);
       }
     };
-
     fetchLatestUserData();
+  }
+  else {
+    // Handle the case where access_token is not available
+    console.log("Access token not available");
+  }
   }, []);
 
 
@@ -40,9 +51,9 @@ const DashboardTop = () => {
         <div className="shadow-md bg-white w-full lg:w-96 h-auto lg:h-68 flex flex-col justify-center space-y-5 rounded-md p-5 hover:shadow-xl">
           <p className="font-medium">Company Details</p>
           <div className="space-y-2">
-          {latestUserData && (
+          {loggedInUserData && (
 
-            <h2 className="font-semibold">{latestUserData.companyName}</h2>
+            <h2 className="font-semibold">{loggedInUserData.companyName}</h2>
             )}
             <p className="text-gray-600">
               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius
@@ -59,7 +70,7 @@ const DashboardTop = () => {
               />
             </div>
             <div className="border-b-[1px]  hover:font-semibold  border-dashed border-gray-500">
-              <button>Add Business Details</button>
+              <Link href="/dashboard/profile" className="cursor-pointer">Add Business Details</Link>
             </div>
           </div>
         </div>

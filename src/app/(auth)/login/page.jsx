@@ -32,26 +32,35 @@ const Login = () => {
   const [Otp, setOtp] = useState("");
   const [verificationStep, setVerificationStep] = useState("phone");
   const [isLoggedIn, setLoggedIn] = useState(false);
- 
+  const [isFormValid, setFormValid] = useState(false);
+
   useEffect(() => {
-    // Get the mobileNumber parameter from the URL
+    // Check if the form is valid before allowing actions
+    if (verificationStep === "phone") {
+      setFormValid(!!phoneNumber);
+    } else if (verificationStep === "otp") {
+      setFormValid(!!Otp);
+    }
+  }, [verificationStep, phoneNumber, Otp]);
+  useEffect(() => {
+   
     const queryParams = new URLSearchParams(window.location.search);
     const mobileNumberParam = queryParams.get("mobileNumber");
   
     if (mobileNumberParam) {
-      // Decode the URL-encoded mobile number and set it in the state
+      
       const decodedMobileNumber =  decodeURIComponent(mobileNumberParam);
       setPhoneNumber("+" + decodedMobileNumber.trim());
   
-      // Print a test message in the console
       console.log("Mobile Number:",phoneNumber);
     } else {
-      // If mobileNumberParam is null, print an error message
+      
       console.error("Mobile Number not found in URL parameters");
     }
   }, []);
   
   const sentOtp = async () => {
+    if (isFormValid) {
     try {
       const userCollection = collection(firestore, "users");
       // console.log("Querying for mobile number:", phoneNumber);
@@ -79,10 +88,16 @@ const Login = () => {
       toast.error("Failed to send OTP. Please try again.");
       console.error(err);
     }
+  }
+    else {
+      toast.error("Please enter a valid phone number.");
+    }
   };
+
 
   
   const verify = async () => {
+    if (isFormValid) {
     try {
       const userCredential = await user.confirm(Otp);
       const accessToken = userCredential.user.accessToken;
@@ -94,6 +109,10 @@ const Login = () => {
       console.error(err);
       toast.error("Failed to verified OTP is unvalid. Please try again.");
     }
+  }
+  else {
+    toast.error("Please enter a valid OTP.");
+  }
   };
   useEffect(() => {
     const handleLogin = async () => {

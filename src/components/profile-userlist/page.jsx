@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, query, onSnapshot, } from "firebase/firestore";
+import { getFirestore, collection,  onSnapshot, } from "firebase/firestore";
 import { app } from "../../app/firebase";
 
 const UserListing = () => {

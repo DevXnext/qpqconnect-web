@@ -190,7 +190,7 @@ const ProfileBusinessForm = () => {
   };
   return (
     <>
-      <div className="flex flex-col space-y-5 p-5 bg-white shadow-sm rounded-sm">
+      <div className="flex flex-col space-y-5 p-5 bg-white hover:shadow-xl shadow-sm rounded-md">
         <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8">
           <div className="flex-1 flex-col space-y-3">
             <label className="font-semibold text-gray-700">Company Name</label>

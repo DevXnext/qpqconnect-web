@@ -11,8 +11,9 @@ import {
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../../app/firebase";
-import cookie from "js-cookie";
+// import cookie from "js-cookie";
 import { parseCookies } from "nookies";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -21,13 +22,44 @@ const AdminDetails = () => {
   const [userName, setuserName] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
   const [emailAddress, setemailAddress] = useState("");
+  const storage = getStorage();
+  const [selectedLogo, setSelectedLogo] = useState(null); // For the selected file
+  const [fetchedLogo, setFetchedLogo] = useState(null);
 
+  const cookies = parseCookies();
+  const user_access_token = cookies.user_access_token;
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (user_access_token) {
+        const storageRef = ref(storage, `companyImages/${user_access_token}`);
+        const filename = "companyLogo.png";
+        const imageRef = ref(storageRef, filename);
+
+        try {
+          const downloadURL = await getDownloadURL(imageRef);
+          setFetchedLogo(downloadURL);
+        } catch (error) {
+          // Handle error, for example, set a default logo
+          console.error("Error fetching logo:", error);
+          setLogoImage("/profile.png");
+        }
+      }
+    };
+
+    fetchLogo();
+  }, [user_access_token, storage]);
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedLogo(file);
+    }
+  };
 
   useEffect(() => {
     const cookies = parseCookies();
 
-    // Retrieve the access_token from cookies
     const user_access_token = cookies.user_access_token;
+    
     if (user_access_token) {
       const fetchLatestUserData = async () => {
         try {
@@ -68,7 +100,7 @@ const AdminDetails = () => {
       console.log("Access token not available");
     }
   }, []);
-
+ 
   const handleSave = async () => {
     try {
       const formData = {
@@ -101,8 +133,20 @@ const AdminDetails = () => {
           },
           { merge: true }
         );
-
-        // Update the other fields
+      
+        if (logoImage && user_access_token) {
+          const storageRef = ref(storage, `companyImages/${user_access_token}`);
+          const filename = "companyLogo.png";
+          const imageRef = ref(storageRef, filename);
+  
+          await uploadBytes(imageRef, logoImage);
+          const downloadURL = await getDownloadURL(imageRef);
+  
+          // Use the downloadURL as needed (e.g., save it to a database)
+          console.log('Logo uploaded, Download URL:', downloadURL);
+  
+          // Now you can update your state or perform other actions with the downloadURL
+        }
         await setDoc(userDocRef, formData, { merge: true });
 
         toast.success("Admin details saved successfully");
@@ -111,6 +155,7 @@ const AdminDetails = () => {
       }
     } catch (error) {
       console.error("Error updating Admin details:", error);
+      console.error('Error uploading logo:', error);
       toast.error("Failed to save Admin details. Please try again.");
     }
   };
@@ -169,6 +214,7 @@ const AdminDetails = () => {
           </div>
           <div className="basis-[30%] flex flex-col space-y-5 justify-center w-full items-center relative">
             <div className="relative">
+            <label htmlFor="logoInput" className="cursor-pointer">
               <Image
                 src="/camera.svg"
                 width={40}
@@ -177,15 +223,26 @@ const AdminDetails = () => {
                 className="absolute top-44 left-20 bg-white p-1 rounded-full "
               />
               <Image
-                src="/profile.svg"
+             src={selectedLogo
+              ? URL.createObjectURL(selectedLogo)
+              : fetchedLogo || "/profile.png"}
+
                 width={200}
                 height={200}
                 alt="profile"
                 className="border rounded-full p-2"
               />
+              </label>
+               <input
+          type="file"
+          id="logoInput"
+          accept="image/*"
+          className="hidden"
+          onChange={handleLogoChange}
+        />
             </div>
             <div>
-              <p>Profile Picture</p>
+              <p>Company Logo</p>
             </div>
             <div className="flex flex-row space-x-6">
               <button   onClick={handleSave}
@@ -194,16 +251,10 @@ const AdminDetails = () => {
               >
                 Save
               </button>
-              {/* <button
-                className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
-    hover:bg-black border-black hover:text-white border-2 text-black"
-              >
-                Reset
-              </button> */}
+            
             </div>
           </div>
-        </div>
-      </div>
+        
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -215,6 +266,8 @@ const AdminDetails = () => {
         draggable
         pauseOnHover
       />
+      </div>
+      </div>
     </>
   );
 };

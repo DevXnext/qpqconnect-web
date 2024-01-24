@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const DashboardTop = ({ access_token }) => {
   const [loggedInUserData, setLoggedInUserData] = useState(null);
-
+  const [memberSince, setMemberSince] = useState(null);
   useEffect(() => {
     const cookies = parseCookies();
 
@@ -27,7 +27,17 @@ const DashboardTop = ({ access_token }) => {
           // Found the latest user, extract user data
           const loggedInUserDoc = userQuerySnapshot.docs[0];
           setLoggedInUserData(loggedInUserDoc.data());
-          console.log(loggedInUserDoc.data());
+          // console.log(loggedInUserDoc.data());
+          const registrationTimestamp = loggedInUserDoc.data().timestamp.toMillis();
+          const currentDate = new Date().getTime();
+          const timeDiff = currentDate - registrationTimestamp;
+          
+          // Convert time difference to days, hours, and minutes
+          const days = Math.floor(timeDiff / (24 * 60 * 60 * 1000));
+          const hours = Math.floor((timeDiff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+          const minutes = Math.floor((timeDiff % (60 * 60 * 1000)) / (60 * 1000));
+
+          setMemberSince({ days, hours, minutes });
         } else {
           console.log("No users found");
         }
@@ -48,7 +58,8 @@ const DashboardTop = ({ access_token }) => {
     <>
         
       <div className="flex flex-col lg:flex-row gap-4">
-        <div className="shadow-md bg-white w-full lg:w-96 h-auto lg:h-68 flex flex-col justify-center space-y-5 rounded-md p-5 hover:shadow-xl">
+        <div className="shadow-md bg-white w-full lg:w-96 h-auto lg:h-68 flex flex-col 
+        justify-center space-y-5 rounded-md p-5 hover:shadow-xl">
           <p className="font-medium">Company Details</p>
           <div className="space-y-2">
           {loggedInUserData && (
@@ -101,7 +112,11 @@ const DashboardTop = ({ access_token }) => {
         <div className="shadow-md w-full lg:w-96 bg-white flex flex-row lg:space-x-5 p-5 justify-center rounded-md hover:shadow-xl">
           <div className="basis-[50%] flex flex-col space-y-4">
             <p className="font-medium ">Member Since</p>
-            <span>2 year</span>
+            <span>  {memberSince && (
+              memberSince.days > 0
+                ? `${memberSince.days} days`
+                : `${memberSince.hours} hours, ${memberSince.minutes} minutes` 
+            )}</span>
             <div className="flex flex-col space-y-1">
               <p className="text-xl font-semibold">Rating</p>
               <Image src="/rating.png" width={100} alt="rating" height={100} />

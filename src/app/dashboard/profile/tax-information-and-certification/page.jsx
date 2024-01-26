@@ -4,66 +4,113 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   where,
   getDocs,
-  serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { app } from "../../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-
+import { parseCookies } from "nookies";
 const TaxInformation = () => {
-  const [BusinessNumber, setBusinessNumber] = useState("");
-  const [IssueDate, setIssueDate] = useState("");
+  const cookies = parseCookies();
+  const user_access_token = cookies.user_access_token;
+
+  const [userData, setUserData] = useState({
+    BusinessNumber: "",
+    IssueDate: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const db = getFirestore(app);
+
+        // Query the user collection to find the document of the logged-in user
+        const userCollectionRef = collection(db, "users");
+        const userQuery = query(
+          userCollectionRef,
+          where("accessToken", "==", user_access_token)
+        );
+        const userQuerySnapshot = await getDocs(userQuery);
+
+        if (!userQuerySnapshot.empty) {
+          const loggedInUserDoc = userQuerySnapshot.docs[0];
+          const loggedInUserData = loggedInUserDoc.data();
+
+          // Set the state with the fetched data
+          setUserData({
+            BusinessNumber:
+              loggedInUserData.BusinessInformationObject?.TaxInformation
+                ?.BusinessNumber || "",
+            IssueDate:
+              loggedInUserData.BusinessInformationObject?.TaxInformation?.IssueDate || "",
+          });
+        } else {
+          toast.error("Logged-in user not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
+
+    fetchData();
+  }, [user_access_token]);
+
   const handleSave = async (event) => {
     event.preventDefault();
-    if (!BusinessNumber || !IssueDate) {
+    if (!userData.BusinessNumber || !userData.IssueDate) {
       toast.error("Please fill in all the required fields.");
       return;
     }
-    const formData = {
-      BusinessNumber: BusinessNumber,
-      IssueDate: IssueDate,
-
-      timestamp: serverTimestamp(),
-    };
-
     try {
-      const firestore = getFirestore(app);
-      const userCollection = collection(firestore, "tax_information");
+      const db = getFirestore(app);
 
-      // Check if a document with the same phone number exists
+      // Step 1: Query the user collection to find the document of the logged-in user
+      const userCollectionRef = collection(db, "users");
       const userQuery = query(
-        userCollection,
-        where("BusinessNumber", "==",  BusinessNumber)
+        userCollectionRef,
+        where("accessToken", "==", user_access_token)
       );
       const userQuerySnapshot = await getDocs(userQuery);
 
       if (!userQuerySnapshot.empty) {
-        toast.error("Company with the Same Business Number Already Exists.");
+        const loggedInUserDoc = userQuerySnapshot.docs[0];
+        const loggedInUserData = loggedInUserDoc.data();
+
+        const BusinessInformationObject =
+          loggedInUserData.BusinessInformationObject || {};
+
+        const TypeAndServices = String(Tax_Information);
+
+        BusinessInformationObject[TypeAndServices] = {
+          BusinessNumber: userData.BusinessNumber,
+          IssueDate: userData.IssueDate,
+        };
+
+        await updateDoc(loggedInUserDoc.ref, {
+          BusinessInformationObject,
+        });
+
+        toast.success("Information saved successfully!");
       } else {
-        // Add a new document with the user details
-        const newuserDoc = await addDoc(userCollection, formData);
-        toast.success("Tax Information Added successfully ");
+        toast.error("Logged-in user not found");
       }
     } catch (error) {
-      console.error("Error saving user details:", error);
-      toast.error("Failed to save user details. Please try again.");
+      console.error("Error adding Information:", error);
+      toast.error("Failed to save Information. Please try again.");
     }
   };
-  const BusinessNumberChangeHandler = (event) => {
-    setBusinessNumber(event.target.value);
+  const Tax_Information = "TaxInformation";
+
+  const BusinessNumberHandler = (event) => {
+    setUserData({ ...userData, BusinessNumber: event.target.value });
+  };
+  const IssueDateHandler = (event) => {
+    setUserData({ ...userData, IssueDate: event.target.value });
   };
 
-  const IssueDateChangeHandler = (event) => {
-    setIssueDate(event.target.value);
-  };
-  const resetForm = () => {
-    setBusinessNumber("");
-    setIssueDate("");
-  };
   return (
     <>
       <div className="flex flex-col space-y-5 p-5 bg-white shadow-sm rounded-sm">
@@ -76,9 +123,9 @@ const TaxInformation = () => {
               <input
                 type="text"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                placeholder="Type name here.."
-                onChange={BusinessNumberChangeHandler}
-                value={BusinessNumber}
+                placeholder="Type number here.."
+                onChange={BusinessNumberHandler}
+                value={userData.BusinessNumber}
                 required
               />
             </div>
@@ -88,8 +135,8 @@ const TaxInformation = () => {
               <input
                 type="date"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                onChange={IssueDateChangeHandler}
-                value={IssueDate}
+                onChange={IssueDateHandler}
+                value={userData.IssueDate}
                 required
               />
             </div>
@@ -103,16 +150,9 @@ const TaxInformation = () => {
             >
               Save
             </button>
-            <button  type="button" // Use type="button" to prevent form submission
-              onClick={resetForm}
-              className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
-    hover:bg-black border-black hover:text-white border-2 text-black"
-            >
-              Reset
-            </button>
+           
           </div>
         </form>
-
       </div>
       <ToastContainer
         position="top-right"

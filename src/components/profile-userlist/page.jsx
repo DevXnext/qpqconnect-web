@@ -1,8 +1,18 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { getFirestore, collection,  onSnapshot, } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  deleteDoc,
+  updateDoc,
+  doc,
+  query,
+} from "firebase/firestore";
 import { app } from "../../app/firebase";
-
+import { parseCookies } from "nookies";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 const UserListing = () => {
   const SkeletonLoader = () => (
     <tr className="border-b border-blue-gray-200 animate-pulse">
@@ -21,96 +31,92 @@ const UserListing = () => {
       <td className="py-2 px-3">
         <div className="h-2 bg-slate-600 rounded"></div>
       </td>
-     
-     
     </tr>
   );
-  const [userData, setuserData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const useresPerPage = 4; // Number of useres to display per page
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [otherUsers, setOtherUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const cookies = parseCookies();
+  const user_access_token = cookies.user_access_token;
+  
+
+
   useEffect(() => {
-    const fetchuserData = async () => {
-      try {
-        const firestore = getFirestore(app);
-        const userCollection = collection(firestore, "users");
-        // const userQuery = query(userCollection);
+    const db = getFirestore(app);
+    const usersCollectionRef = collection(db, "users");
 
-        const unsubscribe = onSnapshot(userCollection, (snapshot) => {
-          const useres = snapshot.docs
-          .filter((doc) => doc.data().userName) // Filter documents with userName field
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
+    const unsubscribe = onSnapshot(
+      query(usersCollectionRef),
+      (snapshot) => {
+        const userData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-          setuserData(useres);
-          setLoading(false);
-        });
-    
-        return () => unsubscribe();
-        
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+        // Find the logged-in user based on the accessToken
+        const user = userData.find((user) => user.accessToken === user_access_token);
+
+        if (user) {
+          // Set the logged-in user in the state
+          setLoggedInUser(user);
+
+          // Access the 'otherusers' array from the logged-in user's data
+          const otherUsersArray = user.otherusers || [];
+          setOtherUsers(otherUsersArray);
+        }
+
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching users:", error);
+        setLoading(false);
       }
+    );
+
+    return () => {
+      // Unsubscribe from the listener when the component unmounts
+      unsubscribe();
     };
+  }, [user_access_token]);
 
-    fetchuserData();
-  }, []);
+  const handleDeleteUser = async (userId) => {
+    try {
+      const db = getFirestore(app);
+      const userDocRef = doc(db, "users", loggedInUser.id);
 
-  const filtereduseres = userData.filter((user) =>
-    user.userName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      // Find the index of the user to be deleted in the 'otherusers' array
+      const userIndex = loggedInUser.otherusers.findIndex(
+        (user) => user.id === userId
+      );
 
-  const indexOfLastuser = currentPage * useresPerPage;
-  const indexOfFirstuser = indexOfLastuser - useresPerPage;
-  const currentuseres = filtereduseres.slice(indexOfFirstuser, indexOfLastuser);
+      if (userIndex !== -1) {
+        // Create a new array without the user to be deleted
+        const updatedOtherUsers = [
+          ...loggedInUser.otherusers.slice(0, userIndex),
+          ...loggedInUser.otherusers.slice(userIndex + 1),
+        ];
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+        // Update the 'otherusers' array in the user document
+        await updateDoc(userDocRef, { otherusers: updatedOtherUsers });
+
+        // Update the state with the modified 'otherusers' array
+        setOtherUsers(updatedOtherUsers);
+        toast.success("User deleted successfull.");
+      }
+    } catch (error) {
+      toast.error("Unable to delete user. Please try again later");
+      console.error("Error deleting user:", error);
+    }
+  };
   return (
     <>
       <div className="border w-full h-fit rounded-md hover:shadow-xl shadow flex justify-center flex-col space-y-3 p-5">
         <div className="flex flex-row justify-between items-center border-b-2 pb-2">
           <h2 className="text-lg font-semibold">User Listing</h2>
-          <div className="flex flex-row space-x-3">
-            <div className="flex flex-row items-center">
-              <div className="-mr-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  className="bg-transparent h-10 rounded-md border-[1px] border-gray-300 pl-10 pr-2"
-                  placeholder="Search by Username"  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* <div>
-              <input
-                type="date"
-                className="bg-transparent h-10 rounded-md border-[1px] border-gray-300 px-3"
-                placeholder="Search by Username"
-              />
-            </div> */}
-          </div>
         </div>
         <div className="overflow-x-auto shadow-md p-3 rounded-xl">
+       
           <table className="min-w-full">
             <thead>
               <tr className="bg-blue-gray-100 text-gray-700">
@@ -124,17 +130,17 @@ const UserListing = () => {
             </thead>
             <tbody className="text-blue-gray-900">
             {loading ? (
-                <>
-                  <SkeletonLoader />
-                  <SkeletonLoader />
-                  <SkeletonLoader />
-                </>
-              ) : filtereduseres.length && filtereduseres.length > 0 ? (
-                currentuseres.map((user, index) => (
-              <tr key={user.id}className="border-b border-blue-gray-200">
-                <td className="py-3 px-4">{index + 1}</td>
-                <td className="py-3 px-4 font-semibold text-blue-800">{user.userName}</td>
-                <td className="py-3 px-4 font-semibold">{user.emailAddress}</td>
+            // Display loading skeleton or spinner while data is being fetched
+            <SkeletonLoader />
+          )  : otherUsers.length > 0 ? (
+            otherUsers.map((user, index) => (
+
+              <tr key={user.id} className="border-b border-blue-gray-200">
+                <td className="py-3 px-4"> {index + 1}</td>
+                <td className="py-3 px-4 font-semibold text-blue-800">
+                {user.userName}
+                </td>
+                <td className="py-3 px-4 font-semibold"> {user.emailAddress}</td>
                 <td className="py-3 px-4">{user.mobileNumber}</td>
                 <td className="py-3 px-4">{user.userRole}</td>
 
@@ -145,7 +151,7 @@ const UserListing = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
-                    className="w-6 h-6 text-red-500"
+                    className="w-6 h-6 text-red-500" onClick={() => handleDeleteUser(user.id)}
                   >
                     <path
                       strokeLinecap="round"
@@ -155,62 +161,30 @@ const UserListing = () => {
                   </svg>
                 </td>
               </tr>
-             ))
-             ) : (
-               <tr>
-                 <td
-                   colSpan="9"
-                   className="py-3 px-4 text-xl font-semibold text-center"
-                 >
-                   No Data Found..
-                 </td>
-               </tr>
-             )}
-            </tbody>
+                    ))
+                    ) : (
+                      <tr>
+                      <td
+                        colSpan="9"
+                        className="py-3 px-4 text-xl font-semibold text-center"
+                      >
+                        No Users Found..
+                      </td>
+                    </tr>
+              )}
+            </tbody>    
           </table>
-        </div>
-        <div className="flex flex-row space-x-5 py-5 w-full items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            troke="currentColor"
-            className="w-6 h-6  hover:text-gray-600 "
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"  onClick={() => setCurrentPage((prevPage) => Math.min(prevPage - 1, Math.ceil(filtereduseres.length / useresPerPage)))}
-            />
-          </svg>
-
-          {Array.from({ length: Math.ceil((filtereduseres.length || 0) / useresPerPage) }).map((_, index) => (
-            <button
-              key={index}
-              className={` px-3 py-2 hover:bg-gray-200 hover:text-black   rounded-md ${
-                currentPage === index + 1 ? "bg-gray-800 text-white" : "bg-gray-200 text-black"
-              }`}
-              onClick={() => paginate(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6 hover:text-gray-600"   onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filtereduseres.length / useresPerPage)))}
-          > 
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5"
-            />
-          </svg>
+          <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
         </div>
       </div>
     </>

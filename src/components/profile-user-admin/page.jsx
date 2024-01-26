@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   where,
   getDocs,
@@ -41,13 +40,14 @@ const AdminDetails = () => {
         } catch (error) {
           // Handle error, for example, set a default logo
           console.error("Error fetching logo:", error);
-          setLogoImage("/profile.png");
+          setSelectedLogo("/profile.png");
         }
       }
     };
 
     fetchLogo();
   }, [user_access_token, storage]);
+  
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -134,12 +134,12 @@ const AdminDetails = () => {
           { merge: true }
         );
       
-        if (logoImage && user_access_token) {
+        if (selectedLogo && user_access_token) {
           const storageRef = ref(storage, `companyImages/${user_access_token}`);
           const filename = "companyLogo.png";
           const imageRef = ref(storageRef, filename);
   
-          await uploadBytes(imageRef, logoImage);
+          await uploadBytes(imageRef, selectedLogo);
           const downloadURL = await getDownloadURL(imageRef);
   
           // Use the downloadURL as needed (e.g., save it to a database)

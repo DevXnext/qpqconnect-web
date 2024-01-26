@@ -3,61 +3,29 @@ import React, { useState } from "react";
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   where,
   getDocs,
-  serverTimestamp,
+  updateDoc,
+
 } from "firebase/firestore";
 import { app } from "../../app/firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-
+import { parseCookies } from "nookies";
 const AddUser = () => {
+
+
+  const cookies = parseCookies();
+  const user_access_token = cookies.user_access_token;
+
+
   const [userName, setuserName] = useState("");
   const [mobileNumber, setmobileNumber] = useState("");
   const [emailAddress, setemailAddress] = useState("");
   const [userRole, setUserRole] = useState("");
 
-  const handleSave = async (event) => {
-    event.preventDefault();
-    if (!userName || !mobileNumber || !emailAddress || !userRole) {
-      toast.error("Please fill in all the required fields.");
-      return;
-    }
-    const formData = {
-      userName: userName,
-      mobileNumber: mobileNumber,
-      emailAddress: emailAddress,
-      userRole: userRole,
-      timestamp: serverTimestamp(),
-    };
-
-    try {
-      const firestore = getFirestore(app);
-      const userCollection = collection(firestore, "users");
-
-      // Check if a document with the same phone number exists
-      const userQuery = query(
-        userCollection,
-        where("mobileNumber", "==", mobileNumber)
-      );
-      const userQuerySnapshot = await getDocs(userQuery);
-
-      if (!userQuerySnapshot.empty) {
-        toast.error("User with the same phone number already exists.");
-      } else {
-        // Add a new document with the user details
-        const newuserDoc = await addDoc(userCollection, formData);
-        toast.success(
-          "User added successfully with ID: " + newuserDoc.id.toString(2)
-        );
-      }
-    } catch (error) {
-      console.error("Error saving user details:", error);
-      toast.error("Failed to save user details. Please try again.");
-    }
-  };
+ 
   const userNameChangeHandler = (event) => {
     setuserName(event.target.value);
   };
@@ -71,7 +39,64 @@ const AddUser = () => {
   const emailAddressChangeHandler = (event) => {
     setemailAddress(event.target.value);
   };
+  const handleSave = async (event) => {
+    event.preventDefault();
 
+    try {
+      const db = getFirestore(app);
+
+      // Step 1: Query the user collection to find the document of the logged-in user
+      const userCollectionRef = collection(db, "users");
+      const userQuery = query(
+        userCollectionRef,
+        where("accessToken", "==", user_access_token)
+      );
+      const userQuerySnapshot = await getDocs(userQuery);
+
+      if (!userQuerySnapshot.empty) {
+        const loggedInUserDoc = userQuerySnapshot.docs[0];
+        const loggedInUserData = loggedInUserDoc.data();
+
+        if (Array.isArray(loggedInUserData.otherusers) && loggedInUserData.otherusers.length >= 2) {
+          toast.error("You have reached the limit of adding other users.");
+          return;
+        }
+  // Check if the user with the same email already exists
+  const userAlreadyExists = loggedInUserData.otherusers.some(
+    (user) => user.emailAddress === emailAddress
+  );
+  if (userAlreadyExists) {
+    toast.error("User with this email already exists.");
+    return;
+  }
+        const otherUsersArray = Array.isArray(loggedInUserData.otherusers)
+          ? loggedInUserData.otherusers
+          : [];
+
+        // Step 3: Add the new user's information to the otherusers array
+        const updatedOtherUsers = [
+          ...otherUsersArray,
+          {
+            userName,
+            mobileNumber,
+            emailAddress,
+            userRole,
+         
+          },
+        ];
+
+        // Step 4: Save the updated document back to the user collection
+        await updateDoc(loggedInUserDoc.ref, { otherusers: updatedOtherUsers });
+
+        toast.success("User added successfully!");
+      } else {
+        toast.error("Logged-in user not found");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+      toast.error("Failed to add user. Please try again.");
+    }
+  };
   return (
     <>
       <div className="flex flex-col space-y-5 p-5 bg-white shadow-sm rounded-sm">
@@ -91,7 +116,7 @@ const AddUser = () => {
 
             <div className="flex-1 flex-col space-y-3">
               <label className="font-semibold text-gray-700">
-                Email emailAddress
+                Email Address
               </label>
               <input
                 type="email"
@@ -148,7 +173,7 @@ const AddUser = () => {
             </button>
           </div>
         </form>
-      </div>
+     
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -160,6 +185,7 @@ const AddUser = () => {
         draggable
         pauseOnHover
       />
+       </div>
     </>
   );
 };

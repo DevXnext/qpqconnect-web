@@ -4,92 +4,155 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   where,
   getDocs,
-  serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { app } from "../../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import { parseCookies } from "nookies";
 const TypeAndServices = () => {
-  const [BusinessType, setBusinessType] = useState("");
-  const [ModePayment, setModePayment] = useState("");
-  const [StartDay, setStartDay] = useState("");
-  const [EndDay, setEndDay] = useState("");
-  const [OpenAt, setOpenAt] = useState("");
-  const [CloseAt, setCloseAt] = useState(""); 
-  const [CompanyDescription, setCompanyDescription] = useState(""); 
+
+
+
+  const cookies = parseCookies();
+  const user_access_token = cookies.user_access_token;
+
+ 
+  const [userData, setUserData] = useState({
+    BusinessType: "",
+    ModePayment: "",
+    StartDay: "",
+    EndDay: "",
+    OpenAt: "",
+    CloseAt: "",
+    CompanyDescription: "",
+  });
+
+
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const db = getFirestore(app);
+
+        // Query the user collection to find the document of the logged-in user
+        const userCollectionRef = collection(db, "users");
+        const userQuery = query(
+          userCollectionRef,
+          where("accessToken", "==", user_access_token)
+        );
+        const userQuerySnapshot = await getDocs(userQuery);
+
+        if (!userQuerySnapshot.empty) {
+          const loggedInUserDoc = userQuerySnapshot.docs[0];
+          const loggedInUserData = loggedInUserDoc.data();
+
+          // Set the state with the fetched data
+          setUserData({
+            BusinessType: loggedInUserData.BusinessInformationObject?.TypeAndServices?.BusinessType || "",
+            ModePayment: loggedInUserData.BusinessInformationObject?.TypeAndServices?.ModePayment || "",
+            StartDay: loggedInUserData.BusinessInformationObject?.TypeAndServices?.StartDay || "",
+            EndDay: loggedInUserData.BusinessInformationObject?.TypeAndServices?.EndDay || "",
+            OpenAt: loggedInUserData.BusinessInformationObject?.TypeAndServices?.OpenAt || "",
+            CloseAt: loggedInUserData.BusinessInformationObject?.TypeAndServices?.CloseAt || "",
+            CompanyDescription: loggedInUserData.BusinessInformationObject?.TypeAndServices?.CompanyDescription || "",
+          });
+        } else {
+          toast.error("Logged-in user not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
+
+    fetchData();
+  }, [user_access_token]); 
+
+const Type_Services = "TypeAndServices";
+
+
   const handleSave = async (event) => {
     event.preventDefault();
-    if (!BusinessType || !ModePayment ) {
+    if (!userData.BusinessType || !userData.ModePayment) {
       toast.error("Please fill in all the required fields.");
       return;
     }
-    const formData = {
-      BusinessType: BusinessType,
-      ModePayment: ModePayment,
-      StartDay: StartDay,
-      EndDay: EndDay,
-      OpenAt: OpenAt,
-      CloseAt: CloseAt,
-      CompanyDescription: CompanyDescription,
-      timestamp: serverTimestamp(),
-    };
-
     try {
-      const firestore = getFirestore(app);
-      const userCollection = collection(firestore, "business_type");
-
-      // Check if a document with the same phone number exists
+      const db = getFirestore(app);
+  
+      // Step 1: Query the user collection to find the document of the logged-in user
+      const userCollectionRef = collection(db, "users");
       const userQuery = query(
-        userCollection,
-        where("CompanyDescription", "==", CompanyDescription)
+        userCollectionRef,
+        where("accessToken", "==", user_access_token)
       );
       const userQuerySnapshot = await getDocs(userQuery);
-
+  
       if (!userQuerySnapshot.empty) {
-        toast.error("User with the same phone number already exists.");
+        const loggedInUserDoc = userQuerySnapshot.docs[0];
+        const loggedInUserData = loggedInUserDoc.data();
+  
+        
+         const BusinessInformationObject = loggedInUserData.BusinessInformationObject || {};
+
+       
+         const TypeAndServices = String(Type_Services);
+   
+         BusinessInformationObject[TypeAndServices] = {
+          BusinessType: userData.BusinessType,
+        ModePayment: userData.ModePayment,
+        StartDay: userData.StartDay,
+        EndDay: userData.EndDay,
+        OpenAt: userData.OpenAt,
+        CloseAt: userData.CloseAt,
+        CompanyDescription: userData.CompanyDescription,
+         };
+   
+        
+         await updateDoc(loggedInUserDoc.ref, {
+          BusinessInformationObject,
+         });
+
+        toast.success("Information saved successfully!");
       } else {
-        // Add a new document with the user details
-        const newuserDoc = await addDoc(userCollection, formData);
-        toast.success(
-          "Added successfully " 
-        );
+        toast.error("Logged-in user not found");
       }
     } catch (error) {
-      console.error("Error saving user details:", error);
-      toast.error("Failed to save user details. Please try again.");
+      console.error("Error adding Information:", error);
+      toast.error("Failed to save Information. Please try again.");
     }
   };
+ 
   const BusinessTypeHandler = (event) => {
-    setBusinessType(event.target.value);
+    setUserData({ ...userData, BusinessType: event.target.value });
   };
-
   const ModePaymentHandler = (event) => {
-    setModePayment(event.target.value);
-  };
+    setUserData({ ...userData, ModePayment: event.target.value });
+  }; 
+  
   const StartDayHandler = (event) => {
-    setStartDay(event.target.value); // Update user role state
+    setUserData({ ...userData,  StartDay: event.target.value });
   };
+ 
   const EndDayHandler = (event) => {
-    setEndDay(event.target.value);
+    setUserData({ ...userData,  EndDay: event.target.value });
   };
+ 
   const OpenAtChangeHandler = (event) => {
-    setOpenAt(event.target.value);
+    setUserData({ ...userData,  OpenAt: event.target.value });
   };
-
   const CloseAtChangeHandler = (event) => {
-    setCloseAt(event.target.value);
+    setUserData({ ...userData,  CloseAt: event.target.value });
   };
-  const  CompanyDescriptionChangeHandler = (event) => {
-    setCompanyDescription(event.target.value);
+  const CompanyDescriptionChangeHandler = (event) => {
+    setUserData({ ...userData,  CompanyDescription: event.target.value });
   };
-  const resetForm = () => {
-    setBusinessNumber("");
-    setIssueDate("");
-  };
+ 
+
   return (
     <>
       <div className="flex flex-col space-y-5 p-5 bg-white shadow-sm rounded-sm">
@@ -100,10 +163,11 @@ const TypeAndServices = () => {
                 Business Type
               </label>
               <select
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
+                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3 "
                 onChange={BusinessTypeHandler}
-                value={BusinessType}
+                value={userData.BusinessType}
               >
+                 <option className="" default>Select Type </option>
                 <option value="Product">Product</option>
                 <option value="Service">Service</option>
               </select>
@@ -114,8 +178,8 @@ const TypeAndServices = () => {
               </label>
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
               onChange={ModePaymentHandler}
-                value={ModePayment}
-              >
+                value={userData.ModePayment}
+              >  <option value="Monday">Select Mode </option>
                 <option className=" " value="online">
                   Online
                 </option>
@@ -133,7 +197,8 @@ const TypeAndServices = () => {
               </label>
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"  
               onChange={StartDayHandler}
-                value={StartDay} >
+                value={userData.StartDay} >
+                <option value="Monday">Choose Day</option>
                 <option value="Monday">Monday</option>
                 <option value="Tuesday">Tuesday</option>
                 <option value="Wednesday">Wednesday</option>
@@ -147,7 +212,8 @@ const TypeAndServices = () => {
               <label className="font-semibold text-gray-700">End day</label>
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
               onChange={EndDayHandler}
-                value={EndDay} >
+                value={userData.EndDay} >
+                   <option value="Monday">Choose Day</option>
                  <option value="Monday">Monday</option>
                 <option value="Tuesday">Tuesday</option>
                 <option value="Wednesday">Wednesday</option>
@@ -165,7 +231,7 @@ const TypeAndServices = () => {
                 type="time"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
                 placeholder="" onChange={OpenAtChangeHandler}
-                value={OpenAt} required
+                value={userData.OpenAt} required
               />
             </div>
             <div className="flex-1 flex-col space-y-3">
@@ -174,7 +240,7 @@ const TypeAndServices = () => {
                 type="time"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
                 placeholder="" onChange={CloseAtChangeHandler}
-                value={CloseAt} required
+                value={userData.CloseAt} required
               />
             </div>
           </div>
@@ -188,7 +254,7 @@ const TypeAndServices = () => {
                 type="time"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full p-3"
                 placeholder="Type here"  onChange={CompanyDescriptionChangeHandler}
-                value={CompanyDescription} required
+                value={userData.CompanyDescription} required
               ></textarea>
             </div>
           </div>
@@ -199,12 +265,12 @@ const TypeAndServices = () => {
             >
               Save
             </button>
-            <button type="button" onClick={resetForm}
+            {/* <button type="button" onClick={resetForm}
               className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
     hover:bg-black border-black hover:text-white border-2 text-black"
             >
               Reset
-            </button>
+            </button> */}
           </div>
         </form>
       </div>

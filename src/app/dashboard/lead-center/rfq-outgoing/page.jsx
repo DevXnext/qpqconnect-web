@@ -1,3 +1,4 @@
+import withAuth from '@/app/lib/auth/page'
 import React from 'react'
 
 const RFQOutgoing = () => {
@@ -331,4 +332,4 @@ const RFQOutgoing = () => {
   )
 }
 
-export default RFQOutgoing
+export default withAuth(RFQOutgoing)

@@ -5,8 +5,7 @@ import DashboardSubscription from "@/components/dashboard-subscription/page";
 import DashboardTable from "@/components/dashboard-table/page";
 import DashboardTop from "@/components/dashboard-top/page";
 import React from "react";
-import withAuth from "../lib/auth/page";
-
+import withAuth from "@/app/lib/auth/page";
 
 const Dashboard = () => {
 

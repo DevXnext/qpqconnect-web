@@ -1,3 +1,4 @@
+import withAuth from '@/app/lib/auth/page'
 import React from 'react'
 
 const FAQ = () => {
@@ -8,4 +9,4 @@ const FAQ = () => {
   )
 }
 
-export default FAQ
+export default withAuth(FAQ)

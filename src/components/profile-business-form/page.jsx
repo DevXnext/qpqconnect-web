@@ -15,10 +15,10 @@ import {
 import { app } from "../../app/firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import cookie from "js-cookie";
 import { parseCookies } from "nookies";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+
 const ProfileBusinessForm = () => {
   const [loggedInUserData, setLoggedInUserData] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -184,10 +184,7 @@ const ProfileBusinessForm = () => {
       borderRadius: "6px",
     }),
   };
-  const resetForm = () => {
-    setBusinessNumber("");
-    setIssueDate("");
-  };
+
   return (
     <>
       <div className="flex flex-col space-y-5 p-5 bg-white hover:shadow-xl shadow-sm rounded-md">
@@ -247,7 +244,7 @@ const ProfileBusinessForm = () => {
               value={selectedCountry} 
               onChange={countryChangeHandler}
               placeholder="Select country..."
-              styles={customStyles} 
+              styles={customStyles}  
               
             />
           </div>

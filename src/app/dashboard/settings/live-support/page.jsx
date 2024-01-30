@@ -1,3 +1,4 @@
+import withAuth from '@/app/lib/auth/page'
 import React from 'react'
 
 const LiveSupport = () => {
@@ -6,4 +7,4 @@ const LiveSupport = () => {
   )
 }
 
-export default LiveSupport
+export default withAuth(LiveSupport)

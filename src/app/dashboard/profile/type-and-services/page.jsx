@@ -13,6 +13,7 @@ import { app } from "../../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { parseCookies } from "nookies";
+import withAuth from "@/app/lib/auth/page";
 const TypeAndServices = () => {
 
 
@@ -289,4 +290,4 @@ const Type_Services = "TypeAndServices";
   );
 };
 
-export default TypeAndServices;
+export default withAuth(TypeAndServices);

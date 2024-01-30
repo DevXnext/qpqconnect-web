@@ -49,17 +49,21 @@ const ProfileMedia = () => {
           const downloadURL = await getDownloadURL(imageRef);
           const filename = imageRef.name;
 
-          // Extract timestamp from the filename
-          const timestamp = parseInt(filename.split('_')[0], 10);
-  
-          return { url: downloadURL, filename, timestamp };
+          if (filename !== "companyLogo.png") {
+            // Extract timestamp from the filename
+            const timestamp = parseInt(filename.split('_')[0], 10);
+            return { url: downloadURL, filename, timestamp };
+          } else {
+            return null;
+          }
         })
       );
-      const latestTimestamp = Math.max(...urls.map((image) => image.timestamp));
+      const filteredUrls = urls.filter((url) => url !== null);
+      const latestTimestamp = Math.max(...filteredUrls.map((image) => image.timestamp));
 
-      // Sort the urls array by timestamp in descending order
-      const sortedUrls = urls.sort((a, b) => {
-        if (a.timestamp === latestTimestamp) return -1; // Latest image comes first
+     
+      const sortedUrls = filteredUrls.sort((a, b) => {
+        if (a.timestamp === latestTimestamp) return -1; 
         if (b.timestamp === latestTimestamp) return 1;
         return b.timestamp - a.timestamp;
       });
@@ -73,13 +77,13 @@ const ProfileMedia = () => {
       toast.error("Failed to refresh images. Please try again.");
     }
     finally {
-      setLoading(false); // Set loading to false after fetching images (success or error)
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
     if (!user_access_token) {
-      // Handle the case where the user access token is not available
+      
       console.error("User access token not available. Please log in.");
       return;
     }
@@ -95,16 +99,21 @@ const ProfileMedia = () => {
             const downloadURL = await getDownloadURL(imageRef);
             const filename = imageRef.name;
 
-            // Extract timestamp from the filename
-            const timestamp = parseInt(filename.split('_')[0], 10);
-    
-            return { url: downloadURL, filename, timestamp };
+            if (filename !== "companyLogo.png") {
+              // Extract timestamp from the filename
+              const timestamp = parseInt(filename.split('_')[0], 10);
+              return { url: downloadURL, filename, timestamp };
+            } else {
+              return null;
+            }
           })
         );
-        const latestTimestamp = Math.max(...urls.map((image) => image.timestamp));
+        const filteredUrls = urls.filter((url) => url !== null);
+
+        const latestTimestamp = Math.max(...filteredUrls.map((image) => image.timestamp));
 
         // Sort the urls array by timestamp in descending order
-        const sortedUrls = urls.sort((a, b) => {
+        const sortedUrls = filteredUrls.sort((a, b) => {
           if (a.timestamp === latestTimestamp) return -1; // Latest image comes first
           if (b.timestamp === latestTimestamp) return 1;
           return b.timestamp - a.timestamp;

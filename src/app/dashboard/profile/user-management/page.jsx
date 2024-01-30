@@ -1,4 +1,5 @@
 "use client"
+import withAuth from '@/app/lib/auth/page'
 import AddUser from '@/components/profile-adduser/page'
 import AdminDetails from '@/components/profile-user-admin/page'
 import UserListing from '@/components/profile-userlist/page'
@@ -17,4 +18,4 @@ const UserManagement = () => {
   )
 }
 
-export default UserManagement
+export default withAuth(UserManagement)

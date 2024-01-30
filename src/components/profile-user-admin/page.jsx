@@ -213,7 +213,7 @@ const AdminDetails = () => {
             </div>
           </div>
           <div className="basis-[30%] flex flex-col space-y-5 justify-center w-full items-center relative">
-            <div className="relative">
+            <div className="relative w-48 h-48">
             <label htmlFor="logoInput" className="cursor-pointer">
               <Image
                 src="/camera.svg"
@@ -223,14 +223,14 @@ const AdminDetails = () => {
                 className="absolute top-44 left-20 bg-white p-1 rounded-full "
               />
               <Image
-             src={selectedLogo
+             src={selectedLogo 
               ? URL.createObjectURL(selectedLogo)
               : fetchedLogo || "/profile.png"}
 
                 width={200}
                 height={200}
                 alt="profile"
-                className="border rounded-full p-2"
+                className="border rounded-full w-full h-full p-2"
               />
               </label>
                <input

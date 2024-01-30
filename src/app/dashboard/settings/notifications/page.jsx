@@ -1,3 +1,4 @@
+import withAuth from "@/app/lib/auth/page";
 import React from "react";
 
 const Notifications = () => {
@@ -25,4 +26,4 @@ const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default withAuth(Notifications);

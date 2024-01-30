@@ -2,10 +2,10 @@
 
 import ProfileBusinessForm from "@/components/profile-business-form/page";
 import ProfileBusinessMedia from "@/components/profile-business-media/page";
-import withAuth from "../../lib/auth/page";
-import Link from "next/link";
 import React from "react";
 import ProfileMedia from "@/components/profile-media/page";
+import withAuth from "@/app/lib/auth/page";
+
 
 const Profile = () => {
   return (

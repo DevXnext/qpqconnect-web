@@ -13,6 +13,8 @@ import { app } from "../../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { parseCookies } from "nookies";
+
+import withAuth from "@/app/lib/auth/page";
 const TaxInformation = () => {
   const cookies = parseCookies();
   const user_access_token = cookies.user_access_token;
@@ -169,4 +171,4 @@ const TaxInformation = () => {
   );
 };
 
-export default TaxInformation;
+export default withAuth(TaxInformation);

@@ -1,3 +1,4 @@
+import withAuth from '@/app/lib/auth/page'
 import React from 'react'
 
 const ProductInterest = () => {
@@ -57,4 +58,4 @@ const ProductInterest = () => {
   )
 }
 
-export default ProductInterest
+export default withAuth(ProductInterest)

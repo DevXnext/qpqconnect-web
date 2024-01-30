@@ -1,3 +1,4 @@
+import withAuth from "@/app/lib/auth/page";
 import Image from "next/image";
 import React from "react";
 
@@ -239,4 +240,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default withAuth(ProductList);

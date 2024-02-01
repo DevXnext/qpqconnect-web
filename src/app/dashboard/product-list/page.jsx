@@ -1,8 +1,62 @@
+"use client"
 import withAuth from "@/app/lib/auth/page";
 import Image from "next/image";
-import React from "react";
-
+import React, {useState, useEffect} from "react";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot
+} from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { app } from "../../firebase";
+import { parseCookies } from "nookies";
 const ProductList = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // Retrieve user access token from cookies
+    const cookies = parseCookies();
+    const userAccessToken = cookies.user_access_token;
+
+    if (userAccessToken) {
+      // Query Firestore for user's products based on access token
+      const db = getFirestore(app);
+      const productsRef = collection(db, "products");
+      const q = query(productsRef, where("user_access_token", "==", userAccessToken));
+
+      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+        const userProducts = [];
+        for (const doc of querySnapshot.docs) {
+          const productData = doc.data();
+          // Fetch image URLs from Storage
+          const imagePaths = productData.imagePaths;
+
+          if (imagePaths && imagePaths.length > 0) {
+            // Get the download URL for the image at index 0
+            const imagePath = imagePaths[0];
+            const storage = getStorage(app);
+            const imageRef = ref(storage, imagePath);
+            const imageUrl = await getDownloadURL(imageRef);
+
+            userProducts.push({
+              id: doc.id,
+              imageUrl,
+              ...productData,
+            });
+          }
+        }
+
+        setProducts(userProducts);
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, []);
   return (
     <>
    
@@ -10,187 +64,40 @@ const ProductList = () => {
         <div className="flex flex-row justify-between w-full">
           <p className="text-2xl font-semibold">Product List</p>
           <input
-            className="border-2 bg-white rounded-lg px-2 w-full md:w-96 h-12 shadow"
+            className="border-2 bg-white rounded-lg px-2 w-full md:w-80 h-12 shadow"
             placeholder="Search product by name.."
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-        <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
+        {products.map((product) => (
+        <div key={product.id}  className="border-2 rounded-lg p-4 shadow-lg flex 
+         flex-col space-y-5 bg-white">
+          <div className="w-full items-center flex flex-col">
+          <Image
+              src={product.imageUrl}
               width={300}
               height={300}
-              alt="product_image"
+              alt="product_image" className="rounded-md shadow-sm"
             />
+          </div>
+            
             <div className="flex flex-col space-y-3">
               <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
+              {product.product_Name}
               </p>
               <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
+                Supply Ability :  {product.supply_Ability}
               </span>
               <div className="flex flex-row space-x-2">
                 <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
+                  {product.base_Price}
                 </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
+                {/* <span className="text-gray-400 font-medium">Per Quantity</span> */}
               </div>
             </div>
           </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-2 rounded-lg p-4 shadow-lg flex items-center flex-col space-y-5 bg-white">
-            <Image
-              src="/product_image.png"
-              width={300}
-              height={300}
-              alt="product_image"
-            />
-            <div className="flex flex-col space-y-3">
-              <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                Apple Airpods Pro MWP22A M/A Bluetooth 7.1{" "}
-              </p>
-              <span className="text-gray-400 font-semibold">
-                Min Quantity : 150
-              </span>
-              <div className="flex flex-row space-x-2">
-                <p className="text-1xl font-semibold line-clamp-2 text-wrap">
-                  $120 /
-                </p>{" "}
-                <span className="text-gray-400 font-medium">Per Quantity</span>
-              </div>
-            </div>
-          </div>
+ ))}
+         
         </div>
         <div className="flex flex-row space-x-5 py-5 w-full items-center justify-center">
         <svg

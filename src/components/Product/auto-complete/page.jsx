@@ -40,7 +40,7 @@ const AutocompleteInput = ({ label, suggestions, onSelect }) => {
   }, []);
 
   return (
-    <div ref={inputRef} className="autocomplete flex flex-col space-y-2 w-full">
+    <div ref={inputRef} className="autocomplete flex flex-col space-y-2 w-full0">
       <label className="font-semibold text-gray-700 ">{label}</label>
       <input
         type="text"

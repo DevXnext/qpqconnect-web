@@ -16,7 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import withAuth from "@/app/lib/auth/page";
 import AutocompleteInput from "@/components/Product/auto-complete/page";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage,  uploadBytes, getDownloadURL, ref, ref as storageRef, list } from "firebase/storage";
 const AddProduct = () => {
   const [selectedComplexImages, setSelectedComplexImages] = useState([]);
   const complexFileInputRef = useRef(null);
@@ -145,10 +145,21 @@ const AddProduct = () => {
 
   const handleSaveProduct = async () => {
     try {
-      const QPQproductId = generateRandomProductId(productName);
 
-      const storagePath = `companyImages/${user_access_token}/productImages/${QPQproductId}`;
+      const storagePath = `companyImages/${user_access_token}/productImages/${productCode}`;
+
       const storage = getStorage(app);
+    // Check if the folder with the same QPQproductId already exists
+    const folderItems = await list(storageRef(storage, storagePath));
+    
+    const QPQproductId = generateRandomProductId(productName);
+
+    if (folderItems.items.length > 0) {
+      // Folder already exists, handle validation (e.g., show an alert)
+      toast.error('Product images with the same product name  already exist.');
+      return;
+    }
+
       let filename;
       for (const complexImage of selectedComplexImages) {
         const imageBlob = await fetch(complexImage.src).then((response) =>
@@ -172,7 +183,7 @@ const AddProduct = () => {
 
         console.log("Image uploaded successfully:", imageUrl);
       }
-
+      
       const db = getFirestore(app);
       const productsRef = collection(db, "products");
       const productCodeQuery = query(
@@ -335,15 +346,15 @@ const AddProduct = () => {
           <div className="w-full md:w-1/5">
             <h2 className="text-xl font-semibold">Category</h2>
 
-            <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8 mt-5">
+            <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8 mt-5 ">
               <AutocompleteInput
                 label="Parent Category"
-                suggestions={categories}
-                onSelect={handleParentCategorySelect}
+                suggestions={categories} 
+                onSelect={handleParentCategorySelect} 
               />
             </div>
 
-            <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8 mt-5">
+            <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8 mt-5 ">
               <AutocompleteInput
                 label="Sub category"
                 suggestions={subcategories}
@@ -433,12 +444,7 @@ const AddProduct = () => {
               >
                 Add
               </button>
-              <button
-                className="bg-white px-8 py-2 rounded-lg text-1xl  font-semibold
-    hover:bg-black border-black hover:text-white border-2 text-black"
-              >
-                Reset
-              </button>
+              
             </div>
           </div>
         </div>

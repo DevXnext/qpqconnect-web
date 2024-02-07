@@ -6,13 +6,15 @@ import {
   query,
   where,
   getDocs,
-  updateDoc,
+  updateDoc, 
 
 } from "firebase/firestore";
 import { app } from "../../app/firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { parseCookies } from "nookies";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 const AddUser = () => {
 
 
@@ -62,9 +64,10 @@ const AddUser = () => {
           return;
         }
   // Check if the user with the same email already exists
-  const userAlreadyExists = loggedInUserData.otherusers.some(
+  const userAlreadyExists = Array.isArray(loggedInUserData.otherusers) && loggedInUserData.otherusers.some(
     (user) => user.emailAddress === emailAddress
   );
+  
   if (userAlreadyExists) {
     toast.error("User with this email already exists.");
     return;
@@ -132,14 +135,26 @@ const AddUser = () => {
             <div className="flex-1 flex-col space-y-3">
               <label className="font-semibold text-gray-700">
                 Phone Number
-              </label>
-              <input
-                type="number"
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                placeholder="Type name here.."
-                onChange={mobileNumberChangeHandler}
-                value={mobileNumber} required
-              />
+              </label> 
+            
+                                 <PhoneInput
+                      containerStyle={{}}
+                      inputStyle={{
+                        height: "3rem",
+                        paddingLeft: "3rem",
+                        fontSize: "1rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "0.25rem",
+                        width: "100%",
+                      }}
+                      buttonStyle={{}}
+                      dropdownStyle={{}}
+                      country={"us"}
+                      value={mobileNumber}
+                      onChange={(mobileNumber) =>
+                        setmobileNumber("+" + mobileNumber)
+                      }
+                    />
             </div>
 
             <div className="flex-1 flex-col space-y-3">

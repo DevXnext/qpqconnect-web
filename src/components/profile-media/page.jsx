@@ -184,7 +184,7 @@ const ProfileMedia = () => {
                 <div className="z-10 flex justify-end">
                   <button
                     onClick={() => handleDeleteImage(image.filename)}
-                    className="text-red-500 cursor-pointer hover:bg-white"
+                    className="text-red-500 cursor-pointer hover:bg-white bg-red-100 rounded-lg p-1 hover:shadow"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -203,13 +203,13 @@ const ProfileMedia = () => {
                   </button>
                 </div>
 
-                <div className="p-2 border-2 rounded-md overflow-hidden w-full h-full">
+                <div className="p-2 border-2 rounded-md overflow-hidden w-[350px] h-[250px]">
                   <Image
                     src={image.url}
-                    width={500}
-                    height={700}
+                    width={700}
+                    height={500}
                     alt="Images"
-                    className="rounded-md w-full h-full"
+                    className="rounded-md w-full h-full object-cover"
                   />
                 </div>
               </div>

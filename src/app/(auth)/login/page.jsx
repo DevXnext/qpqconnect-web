@@ -152,7 +152,7 @@ const Login = () => {
           />
         </div>
 
-        <div className="lg:w-3/4 flex flex-col w-full ">
+        <div className="lg:w-3/4 flex flex-col w-full sm:space-y-0 space-y-10 ">
           {/* Logo Section */}
           <div className="w-full mt-4 lg:w-1/4 flex lg:items-left items-center lg:justify-start justify-center">
             <Image
@@ -163,8 +163,9 @@ const Login = () => {
               className="ml-6"
             />
           </div>
-          <div className="w-full h-full flex items-center justify-center ">
-            <div className="flex flex-col space-y-5 shadow-lg rounded-md w-full m-10 lg:m-0 lg:w-[500px] hover:shadow-gray-200 bg-white border border-gray-200 p-10">
+          <div className="w-full sm:h-full flex items-center justify-center ">
+            <div className="flex flex-col space-y-5 shadow-lg rounded-md w-full m-3 sm:m-10 lg:m-0 lg:w-[500px] 
+            hover:shadow-gray-200 bg-white border border-gray-200 p-10">
               <div className="flex flex-col space-y-2">
                 <p className="text-2xl font-semibold">Login</p>
                 <span className="text-gray-400">

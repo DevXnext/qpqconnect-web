@@ -34,6 +34,7 @@ const Navbar = ({ toggleSidebar }) => {
   const handleLogout = async () => {
     try {
       cookie.remove("access_token");
+      cookie.remove("user_access_token");
       toast.success("Logout Successfully!", {
         onClose: () => {
           router.push("./login");

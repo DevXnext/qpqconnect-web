@@ -16,12 +16,9 @@ import { parseCookies } from "nookies";
 import withAuth from "@/app/lib/auth/page";
 const TypeAndServices = () => {
 
-
-
   const cookies = parseCookies();
   const user_access_token = cookies.user_access_token;
 
- 
   const [userData, setUserData] = useState({
     BusinessType: "",
     ModePayment: "",
@@ -33,14 +30,12 @@ const TypeAndServices = () => {
   });
 
 
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const db = getFirestore(app);
 
-        // Query the user collection to find the document of the logged-in user
         const userCollectionRef = collection(db, "users");
         const userQuery = query(
           userCollectionRef,
@@ -48,11 +43,12 @@ const TypeAndServices = () => {
         );
         const userQuerySnapshot = await getDocs(userQuery);
 
+
+      
         if (!userQuerySnapshot.empty) {
           const loggedInUserDoc = userQuerySnapshot.docs[0];
           const loggedInUserData = loggedInUserDoc.data();
 
-          // Set the state with the fetched data
           setUserData({
             BusinessType: loggedInUserData.BusinessInformationObject?.TypeAndServices?.BusinessType || "",
             ModePayment: loggedInUserData.BusinessInformationObject?.TypeAndServices?.ModePayment || "",
@@ -84,8 +80,7 @@ const Type_Services = "TypeAndServices";
     }
     try {
       const db = getFirestore(app);
-  
-      // Step 1: Query the user collection to find the document of the logged-in user
+
       const userCollectionRef = collection(db, "users");
       const userQuery = query(
         userCollectionRef,
@@ -127,7 +122,18 @@ const Type_Services = "TypeAndServices";
       toast.error("Failed to save Information. Please try again.");
     }
   };
- 
+
+  const MAX_COMPANY_DESCRIPTION_LENGTH = 2500;
+
+  const CompanyDescriptionChangeHandler = (event) => {
+    const description = event.target.value;
+    if (description.length <= MAX_COMPANY_DESCRIPTION_LENGTH) {
+      setUserData({ ...userData, CompanyDescription: description });
+    } else {
+      toast.error(`Company description should not exceed ${MAX_COMPANY_DESCRIPTION_LENGTH} characters.`);
+    }
+  };
+
   const BusinessTypeHandler = (event) => {
     setUserData({ ...userData, BusinessType: event.target.value });
   };
@@ -149,9 +155,7 @@ const Type_Services = "TypeAndServices";
   const CloseAtChangeHandler = (event) => {
     setUserData({ ...userData,  CloseAt: event.target.value });
   };
-  const CompanyDescriptionChangeHandler = (event) => {
-    setUserData({ ...userData,  CompanyDescription: event.target.value });
-  };
+
  
 
   return (
@@ -199,7 +203,7 @@ const Type_Services = "TypeAndServices";
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"  
               onChange={StartDayHandler}
                 value={userData.StartDay} >
-                <option value="Monday">Choose Day</option>
+                <option value="Not Selected">Choose Day</option>
                 <option value="Monday">Monday</option>
                 <option value="Tuesday">Tuesday</option>
                 <option value="Wednesday">Wednesday</option>
@@ -254,7 +258,7 @@ const Type_Services = "TypeAndServices";
               <textarea
                 type="time"
                 className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full p-3"
-                placeholder="Type here"  onChange={CompanyDescriptionChangeHandler}
+                placeholder="*Limit is 2500 words*"  onChange={CompanyDescriptionChangeHandler}
                 value={userData.CompanyDescription} required
               ></textarea>
             </div>

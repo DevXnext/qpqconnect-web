@@ -221,7 +221,7 @@ const AdminDetails = () => {
                       inputStyle={{
                         height: "3rem",
                         paddingLeft: "3rem",
-                        fontSize: "1rem",
+                        fontSize: "1rem",   
                         border: "1px solid #ccc",
                         borderRadius: "0.25rem",
                         width: "100%",

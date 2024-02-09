@@ -52,7 +52,7 @@ const Login = () => {
       const decodedMobileNumber =  decodeURIComponent(mobileNumberParam);
       setPhoneNumber("+" + decodedMobileNumber.trim());
   
-      console.log("Mobile Number:",phoneNumber);
+      // console.log("Mobile Number:",phoneNumber);
     } else {
       
       console.error("Mobile Number not found in URL parameters");
@@ -101,7 +101,6 @@ const Login = () => {
     try {
       const userCredential = await user.confirm(Otp);
       const accessToken = userCredential.user.accessToken;
-      console.log("Verifed", userCredential);
       toast.success("OTP is Verified");
       setLoggedIn(true);
       setUser({ ...user, accessToken });

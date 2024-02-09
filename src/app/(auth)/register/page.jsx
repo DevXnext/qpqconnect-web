@@ -21,15 +21,16 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 const Register = () => {
   const [companyName, setCompanyName] = useState("");
-  // const [countryCode, setCountryCode] = useState("+1");
   const [mobileNumber, setMobileNumber] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const formRef = useRef();
   const router = useRouter();
+
   const generateAccessToken = () => {
     return uuidv4();
   };
-  const registerUser = async (companyName, mobileNumber, emailAddress) => {
+
+  const registerUser = async (companyName, mobileNumber, emailAddress) => { //Ensured that the registerUser function is called without passing any parameters, as the necessary data is already available from the component's state.
     try {
       const db = getFirestore(app);
       const usersCollection = collection(db, "users");
@@ -43,7 +44,7 @@ const Register = () => {
 
       if (CompanyduplicateSnapshot.docs.length > 0) {
         // Display a toast notification for duplicate entry
-        toast.error("User with the same Company Name already exists");
+        toast.error("A user with the same Company Name already exists");
         return;
       }
 
@@ -168,38 +169,14 @@ const Register = () => {
                         borderRadius: "0.25rem",
                         width: "100%",
                       }}
-                      buttonStyle={{}}
-                      dropdownStyle={{}}
                       country={"us"}
                       value={mobileNumber}
                       onChange={(mobileNumber) =>
                         setMobileNumber("+" + mobileNumber)
-                      }
+                      } 
+                      required
                     />
-                    {/* <div className="flex flex-row space-x-2">
-                    <div className="basis-[12%]">
-                      <select
-                        className="border border-gray-300 rounded-md w-full h-12 "
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                      >
-                        <option value="+1">+1</option>
-                        <option value="+6">+6</option>
-                        <option value="+91">+91</option>
-                        <option value="+91">+420</option>
-                      </select>
-                    </div>
-                    <div className="basis-[88%]">
-                      <input
-                        type="number"
-                        name="mobileNumber"
-                        className="border border-gray-300 rounded-md w-full h-12 p-3"
-                        placeholder="789456123"
-                        value={mobileNumber}  
-                        onChange={(e) => setMobileNumber(e.target.value)} required
-                      /> 
-                    </div>
-                  </div> */}
+                  
                   </div>
                   <div className="flex flex-col space-y-3 ">
                     <label className="text-1xl font-semibold">

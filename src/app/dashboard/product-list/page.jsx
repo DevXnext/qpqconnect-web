@@ -83,7 +83,6 @@ const ProductList = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  
   return (
     <>
       <div className="flex flex-col space-y-5 p-5 md:p-5 lg:p-5">
@@ -96,9 +95,16 @@ const ProductList = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+        <div className="w-full text-center text-2xl">
+          {filteredProducts.length === 0 && (
+          <p className="text-gray-900 font-semibold">No products found.</p>
+        )}
+          </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+        
+        
           {currentProducts.map((product) => (
-            <Link href={`/dashboard/product-list /${product.id}`}
+            <Link href={`/dashboard/product-list/${product.id}`}
               key={product.id}
               className="border-2 rounded-lg p-4 shadow-lg flex 
          flex-col space-y-5 bg-white" 
@@ -130,7 +136,7 @@ const ProductList = () => {
             </Link>
           ))}
         </div>
-        <div className="flex flex-row space-x-5 py-5 w-full items-center justify-center">
+        <div className={`${filteredProducts.length === 0 ? 'hidden' : ''} flex flex-row space-x-5 py-5 w-full items-center justify-center`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -169,8 +175,9 @@ const ProductList = () => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6 " onClick={() => paginate(currentPage + 1)}
+            className={` w-6 h-6`} onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === Math.ceil(filteredProducts.length / productsPerPage)}
+        
           >
             <path
               strokeLinecap="round"

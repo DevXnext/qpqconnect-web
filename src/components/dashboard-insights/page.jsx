@@ -37,14 +37,14 @@ const Insights = () => {
       
 
   return (
-    <div className="flex flex-col space-y-5">
-      <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-5 ">
+      <div className="flex flex-col space-y-2 ">
         
         <p className="text-[22px] font-semibold">Insights</p>
         <span className="text-gray-500 text-[13px]">Views of your profile and product begin from the moment you join QPQ.</span>
       </div>
       <div>
-        <CanvasJSChart options={options} />
+        <CanvasJSChart options={options} className="" />
       </div>
     </div>
   );

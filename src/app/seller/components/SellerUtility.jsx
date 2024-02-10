@@ -29,7 +29,7 @@ export default function SellerUtility() {
             <Button>Send Inquiry</Button>
           </div>
          </div>
-         <div className="card shadow-lg px-4 py-4 mx-4 font-bold ">
+         <div className="card shadow-lg px-4 py-4 mx-4 mt-8 font-bold ">
           <img src="/Rectangle58.png" alt="" className="w-48 h-48 mx-auto"/>
           <div>
             <h6 className="title mt-4">Apple Airpods Pro MWP22A M/A Bluetooth 7.1</h6>

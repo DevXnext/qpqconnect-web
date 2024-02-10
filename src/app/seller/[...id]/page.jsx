@@ -76,7 +76,7 @@ export default function page() {
                 </div>
             </div>
 
-            <div className="enquiryToSupplier md:w-72 w-64 xl:mt-4 border py-8 rounded-xl  mx-auto">
+            <div className="enquiryToSupplier md:w-72 px-4 md:px-0 w-64 xl:mt-4 border py-8 rounded-xl  mx-auto">
             <h4 className='underline font-bold md:ms-2 mb-2'>Send your enquiry to the Supplier</h4>
             <h6 className='text-sm md:ms-2 font-bold mb-2 md:mb-8'>TO - NIDHI VISION INDIA PVT. LTD</h6>
             <form className='md:ms-4'>

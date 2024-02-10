@@ -16,13 +16,16 @@ import { app } from "../../app/firebase";
 import { parseCookies } from "nookies";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 const AdminDetails = () => {
   const [loggedInUserData, setLoggedInUserData] = useState(null);
   const [userName, setuserName] = useState("");
-  const [phoneNumber, setphoneNumber] = useState("");
+  const [mobileNumber, setmobileNumber] = useState("");
   const [emailAddress, setemailAddress] = useState("");
   const storage = getStorage();
-  const [selectedLogo, setSelectedLogo] = useState(null); // For the selected file
+  const [selectedLogo, setSelectedLogo] = useState(null); 
   const [fetchedLogo, setFetchedLogo] = useState(null);
 
   const cookies = parseCookies();
@@ -48,13 +51,31 @@ const AdminDetails = () => {
     fetchLogo();
   }, [user_access_token, storage]);
   
+  // const handleLogoChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setSelectedLogo(file);
+  //   }
+  // };
+  // const handleLogoChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setSelectedLogo(file);
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       // Use the result property to access the data URL
+  //       setFetchedLogo(reader.result);
+  //     };
+  //     // Read the file as a data URL
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedLogo(file);
-    }
+    setSelectedLogo(file);
+    // Update the fetchedLogo state with the data URL
+    setFetchedLogo(URL.createObjectURL(file));
   };
-
   useEffect(() => {
     const cookies = parseCookies();
 
@@ -84,7 +105,7 @@ const AdminDetails = () => {
 
             // Set default values for input fields
             setuserName(userData.userName || "");
-            setphoneNumber(userData.mobileNumber || "");
+            setmobileNumber(userData.mobileNumber || "");
             setemailAddress(userData.emailAddress || "");
            
           } else {
@@ -105,7 +126,7 @@ const AdminDetails = () => {
     try {
       const formData = {
         userName: userName,
-        phoneNumber: phoneNumber,
+        mobileNumber: mobileNumber,
         emailAddress: emailAddress,
         timestamp: serverTimestamp(),
       };
@@ -129,7 +150,7 @@ const AdminDetails = () => {
           userDocRef,
           {
             userName: userName,
-            phoneNumber: phoneNumber,
+            mobileNumber: mobileNumber,
           },
           { merge: true }
         );
@@ -163,8 +184,8 @@ const AdminDetails = () => {
     setuserName(event.target.value);
   };
   
-  const phoneNumberChangeHandler = (event) => {
-    setphoneNumber(event.target.value);
+  const mobileNumberChangeHandler = (event) => {
+    setmobileNumber(event.target.value);
   };
 
   const emailAddressChangeHandler = (event) => {
@@ -189,13 +210,30 @@ const AdminDetails = () => {
                 Phone Number
               </label>
               
-                <input
+                {/* <input
                   type="text"
                   className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
                   placeholder="Type name here.."
-                  value={phoneNumber} onChange={phoneNumberChangeHandler}
-                />
-              
+                  value={mobileNumber} onChange={mobileNumberChangeHandler}
+                /> */}
+                <PhoneInput
+                      containerStyle={{}}
+                      inputStyle={{
+                        height: "3rem",
+                        paddingLeft: "3rem",
+                        fontSize: "1rem",   
+                        border: "1px solid #ccc",
+                        borderRadius: "0.25rem",
+                        width: "100%",
+                      }}
+                      buttonStyle={{}}
+                      dropdownStyle={{}}
+                      country={"us"}
+                      value={mobileNumber}
+                      onChange={(mobileNumber) =>
+                        setmobileNumber("+" + mobileNumber)
+                      }
+                    />
             </div>
 
             <div className="flex-1 flex-col space-y-3">
@@ -222,7 +260,7 @@ const AdminDetails = () => {
                 alt="camera"
                 className="absolute top-44 left-20 bg-white p-1 rounded-full "
               />
-              <Image
+              {/* <Image
              src={selectedLogo 
               ? URL.createObjectURL(selectedLogo)
               : fetchedLogo || "/profile.png"}
@@ -231,7 +269,14 @@ const AdminDetails = () => {
                 height={200}
                 alt="profile"
                 className="border rounded-full w-full h-full p-2"
-              />
+              /> */}
+              <Image
+                  src={fetchedLogo || "/profile.png"}
+                  width={200}
+                  height={200}
+                  alt="profile"
+                  className="border rounded-full w-full h-full p-2"
+                />
               </label>
                <input
           type="file"

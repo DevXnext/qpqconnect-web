@@ -32,7 +32,7 @@ const Dashboard = () => {
     <Insights />
   </div>
 </div>
-            {/* <Insights /> */}
+    
           </div>
         </div>
         <DashboardTable />

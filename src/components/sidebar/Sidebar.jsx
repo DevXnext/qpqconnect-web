@@ -273,10 +273,13 @@ const Sidebar = () => {
             >
               <div>
                 <svg
-                  className="w-6 h-6 text-gray-800 dark:text-white"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 19 18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
                 >
                   <path
                     stroke="currentColor"
@@ -307,13 +310,15 @@ const Sidebar = () => {
             `}
             >
               <div>
+             
                 <svg
-                  className="w-6 h-6 text-gray-800 dark:text-white"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
-                  width="21"
-                  height="20"
-                  viewBox="0 0 21 20"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
                 >
                   <path
                     stroke="currentColor"
@@ -435,52 +440,7 @@ const Sidebar = () => {
             </div>
           </div> */}
           </div>
-          <div>
-            <p
-              className={` font-semibold text-base text-${
-                isSidebarOpen ? "center" : "left"
-              }`}
-            >
-              Personal Settings
-            </p>
-          </div>
-          <div className="flex flex-col space-y-2 text-[18px]">
-            <Link
-              href="/dashboard/personal-settings/change-password"
-              className={`flex flex-row space-x-5 cursor-pointer justify-${
-                isSidebarOpen ? "center" : "left"
-              } hover:bg-white hover:text-black stroke-white rounded-lg hover:stroke-black py-2 px-5 w-full
-            ${
-              pathname === "/dashboard/personal-settings/change-password"
-                ? " bg-white stroke-black text-black"
-                : ""
-            }
-            
-            `}
-            >
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                  />
-                </svg>
-              </div>
-              {!isSidebarOpen && (
-                <div>
-                  <p className="font-semibold ">Change Password</p>
-                </div>
-              )}
-            </Link>
-          </div>
+        
           <div>
             <p
               className={` font-semibold text-base text-${
@@ -505,6 +465,7 @@ const Sidebar = () => {
             `}
             >
               <div>
+            
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -541,10 +502,13 @@ const Sidebar = () => {
             >
               <div>
                 <svg
-                  className="w-6 h-6  text-gray-800 dark:text-white"
-                  aria-hidden="true"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
+                
                 >
                   <path
                     stroke="currentColor"

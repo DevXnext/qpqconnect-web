@@ -104,7 +104,7 @@ const TaxInformation = () => {
       toast.error("Failed to save Information. Please try again.");
     }
   };
-  const Tax_Information = "TaxInformation";
+  const Tax_Information = "TaxInformation"; 
 
   const BusinessNumberHandler = (event) => {
     setUserData({ ...userData, BusinessNumber: event.target.value });

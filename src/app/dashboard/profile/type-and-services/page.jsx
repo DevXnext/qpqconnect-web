@@ -22,14 +22,9 @@ const TypeAndServices = () => {
   const [userData, setUserData] = useState({
     BusinessType: "",
     ModePayment: "",
-    StartDay: "",
-    EndDay: "",
-    OpenAt: "",
-    CloseAt: "",
+    OwnershipType: "",
     CompanyDescription: "",
   });
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,10 +47,7 @@ const TypeAndServices = () => {
           setUserData({
             BusinessType: loggedInUserData.BusinessInformationObject?.TypeAndServices?.BusinessType || "",
             ModePayment: loggedInUserData.BusinessInformationObject?.TypeAndServices?.ModePayment || "",
-            StartDay: loggedInUserData.BusinessInformationObject?.TypeAndServices?.StartDay || "",
-            EndDay: loggedInUserData.BusinessInformationObject?.TypeAndServices?.EndDay || "",
-            OpenAt: loggedInUserData.BusinessInformationObject?.TypeAndServices?.OpenAt || "",
-            CloseAt: loggedInUserData.BusinessInformationObject?.TypeAndServices?.CloseAt || "",
+            OwnershipType: loggedInUserData.BusinessInformationObject?.TypeAndServices?.OwnershipType || "",
             CompanyDescription: loggedInUserData.BusinessInformationObject?.TypeAndServices?.CompanyDescription || "",
           });
         } else {
@@ -74,7 +66,7 @@ const Type_Services = "TypeAndServices";
 
   const handleSave = async (event) => {
     event.preventDefault();
-    if (!userData.BusinessType || !userData.ModePayment) {
+    if (!userData.BusinessType || !userData.ModePayment || !userData.OwnershipType) {
       toast.error("Please fill in all the required fields.");
       return;
     }
@@ -101,10 +93,7 @@ const Type_Services = "TypeAndServices";
          BusinessInformationObject[TypeAndServices] = {
           BusinessType: userData.BusinessType,
         ModePayment: userData.ModePayment,
-        StartDay: userData.StartDay,
-        EndDay: userData.EndDay,
-        OpenAt: userData.OpenAt,
-        CloseAt: userData.CloseAt,
+        OwnershipType: userData. OwnershipType,
         CompanyDescription: userData.CompanyDescription,
          };
    
@@ -140,22 +129,10 @@ const Type_Services = "TypeAndServices";
   const ModePaymentHandler = (event) => {
     setUserData({ ...userData, ModePayment: event.target.value });
   }; 
+  const OwnershipTypeHandler = (event) => {
+    setUserData({ ...userData, OwnershipType: event.target.value });
+  }; 
   
-  const StartDayHandler = (event) => {
-    setUserData({ ...userData,  StartDay: event.target.value });
-  };
- 
-  const EndDayHandler = (event) => {
-    setUserData({ ...userData,  EndDay: event.target.value });
-  };
- 
-  const OpenAtChangeHandler = (event) => {
-    setUserData({ ...userData,  OpenAt: event.target.value });
-  };
-  const CloseAtChangeHandler = (event) => {
-    setUserData({ ...userData,  CloseAt: event.target.value });
-  };
-
  
 
   return (
@@ -172,7 +149,7 @@ const Type_Services = "TypeAndServices";
                 onChange={BusinessTypeHandler}
                 value={userData.BusinessType}
               >
-                 <option className="" default>Select Type </option>
+                 <option className="" default>Select  </option>
                 <option value="Product">Product</option>
                 <option value="Service">Service</option>
               </select>
@@ -184,69 +161,31 @@ const Type_Services = "TypeAndServices";
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
               onChange={ModePaymentHandler}
                 value={userData.ModePayment}
-              >  <option value="Monday">Select Mode </option>
+              >  <option value="Monday">Select  </option>
                 <option className=" " value="online">
                   Online
                 </option>
                 <option value="On Cash">On Cash</option>
               </select>
             </div>
-          </div>
-          <label className="font-semibold text-gray-700">
-            Working Days / Time
-          </label>
-          <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8">
             <div className="flex-1 flex-col space-y-3">
               <label className="font-semibold text-gray-700">
-                Start day
+                Ownership Type
               </label>
-              <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"  
-              onChange={StartDayHandler}
-                value={userData.StartDay} >
-                <option value="Not Selected">Choose Day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-              </select>
-            </div>
-            <div className="flex-1 flex-col space-y-3">
-              <label className="font-semibold text-gray-700">End day</label>
               <select className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-              onChange={EndDayHandler}
-                value={userData.EndDay} >
-                   <option value="Monday">Choose Day</option>
-                 <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
+              onChange={OwnershipTypeHandler}
+                value={userData.OwnershipType}
+              >  <option value="Monday">Select </option>
+                <option className=" " value="Public Limited Company">
+                  Public Limited Company
+                </option>
+                <option value="Private Limited Company"> Private Limited Company</option>
+                <option value="Partnership">Partnership</option>
+                <option value="Proprietorship">Proprietorship</option>
+                <option value="Professional Associations">Professional Associations</option>
+                <option value="Limited Liability Partnership">Limited Liability Partnership</option>
+
               </select>
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8">
-            <div className="flex-1 flex-col space-y-3">
-              <label className="font-semibold text-gray-700">Open at</label>
-              <input
-                type="time"
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                placeholder="" onChange={OpenAtChangeHandler}
-                value={userData.OpenAt} required
-              />
-            </div>
-            <div className="flex-1 flex-col space-y-3">
-              <label className="font-semibold text-gray-700">Close at</label>
-              <input
-                type="time"
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                placeholder="" onChange={CloseAtChangeHandler}
-                value={userData.CloseAt} required
-              />
             </div>
           </div>
 
@@ -257,8 +196,9 @@ const Type_Services = "TypeAndServices";
               </label>
               <textarea
                 type="time"
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full p-3"
-                placeholder="*Limit is 2500 words*"  onChange={CompanyDescriptionChangeHandler}
+                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full p-3"  cols={50}
+                rows={5}
+                placeholder="*Limit is 2500 Characters*"  onChange={CompanyDescriptionChangeHandler}
                 value={userData.CompanyDescription} required
               ></textarea>
             </div>

@@ -54,14 +54,34 @@ const ProfileBusinessForm = () => {
 
             // Update the state with user data
             setLoggedInUserData(userData);
-  
+
             // Set default values for input fields
             setCompanyName(userData.companyName || "");
             setPhoneNumber(userData.mobileNumber || "");
             setAddress(userData.address || "");
-            setSelectedCountry(userData.country ? { label: userData.country, value: userData.country } : null);
-            setSelectedState(userData.state ? { label: userData.state, value: userData.state, country: userData.country } : null);
-            setSelectedCity(userData.city ? { label: userData.city, value: userData.city, state: userData.state } : null);
+            setSelectedCountry(
+              userData.country
+                ? { label: userData.country, value: userData.country }
+                : null
+            );
+            setSelectedState(
+              userData.state
+                ? {
+                    label: userData.state,
+                    value: userData.state,
+                    country: userData.country,
+                  }
+                : null
+            );
+            setSelectedCity(
+              userData.city
+                ? {
+                    label: userData.city,
+                    value: userData.city,
+                    state: userData.state,
+                  }
+                : null
+            );
           } else {
             console.log("No users found");
           }
@@ -87,26 +107,34 @@ const ProfileBusinessForm = () => {
         city: selectedCity ? selectedCity.label : "",
         timestamp: serverTimestamp(),
       };
-  
+
       const userCollectionRef = collection(getFirestore(app), "users");
       const userQuery = query(
         userCollectionRef,
         where("accessToken", "==", loggedInUserData.accessToken)
       );
       const userQuerySnapshot = await getDocs(userQuery);
-  
+
       if (!userQuerySnapshot.empty) {
-        const userDocRef = doc(getFirestore(app), "users", userQuerySnapshot.docs[0].id);
-        
+        const userDocRef = doc(
+          getFirestore(app),
+          "users",
+          userQuerySnapshot.docs[0].id
+        );
+
         // Update the companyName and phoneNumber fields
-        await setDoc(userDocRef, {
-          companyName: companyName,
-          phoneNumber: phoneNumber,
-        }, { merge: true });
-  
+        await setDoc(
+          userDocRef,
+          {
+            companyName: companyName,
+            phoneNumber: phoneNumber,
+          },
+          { merge: true }
+        );
+
         // Update the other fields
         await setDoc(userDocRef, formData, { merge: true });
-  
+
         toast.success("Business details saved successfully");
       } else {
         toast.error("User not found");
@@ -125,7 +153,7 @@ const ProfileBusinessForm = () => {
   const stateOptions = [
     { value: "california", label: "California", country: "usa" },
     { value: "dubai", label: "Dubai", country: "uae" },
-    { value: "Toronto", label: "Toronto", country: "ca" },
+    { value: "ontario", label: "Ontario", country: "ca" },
   ];
 
   const cityOptions = [
@@ -135,8 +163,12 @@ const ProfileBusinessForm = () => {
       state: "california",
     },
     { value: "dubai", label: "Dubai", state: "dubai" },
-    { value: "Quebec", label: "Quebec", state: "Toronto" },
-    { value: "Montreal", label: "Montreal", state: "Toronto" },
+    { value: "Quebec", label: "Quebec", state: "dubai" },
+    { value: "Montreal", label: "Montreal", state: "dubai" },
+
+    { value: "toronto", label: "Toronto", state: "ontario" },
+
+
   ];
 
   const companyNameChangeHandler = (event) => {
@@ -191,36 +223,36 @@ const ProfileBusinessForm = () => {
         <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-8">
           <div className="flex-1 flex-col space-y-3">
             <label className="font-semibold text-gray-700">Company Name</label>
-           
-              <input
-                type="text"
-                className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
-                placeholder="Type name here.."
-                name="companyName"
-                value= {companyName}
-                onChange={companyNameChangeHandler}
-              />
-           
+
+            <input
+              type="text"
+              className="bg-gray-50 h-12 border border-gray-300 rounded-md w-full px-3"
+              placeholder="Type name here.."
+              name="companyName"
+              value={companyName}
+              onChange={companyNameChangeHandler}
+            />
           </div>
 
           <div className="flex-1  flex-col space-y-3">
             <label className="font-semibold text-gray-700">Phone Number</label>
-            
-                                <PhoneInput
-                      containerStyle={{}}
-                      inputStyle={{
-                        height: "3rem",
-                        paddingLeft: "3rem",
-                        fontSize: "1rem",
-                        border: "1px solid #ccc",
-                        borderRadius: "0.25rem",
-                        width: "100%",
-                      }}
-                      buttonStyle={{}}
-                      dropdownStyle={{}}
-                      country={"us"}
-                      value={phoneNumber} onChange={phoneNumberChangeHandler}
-                    />
+
+            <PhoneInput
+              containerStyle={{}}
+              inputStyle={{
+                height: "3rem",
+                paddingLeft: "3rem",
+                fontSize: "1rem",
+                border: "1px solid #ccc",
+                borderRadius: "0.25rem",
+                width: "100%",
+              }}
+              buttonStyle={{}}
+              dropdownStyle={{}}
+              country={"us"}
+              value={phoneNumber}
+              onChange={phoneNumberChangeHandler}
+            />
           </div>
 
           <div className="flex-1  flex-col space-y-3">
@@ -241,11 +273,10 @@ const ProfileBusinessForm = () => {
             <label className="font-semibold text-gray-700">Country</label>
             <Select
               options={countryOptions}
-              value={selectedCountry} 
+              value={selectedCountry}
               onChange={countryChangeHandler}
               placeholder="Select country..."
-              styles={customStyles}  
-              
+              styles={customStyles}
             />
           </div>
 
@@ -256,7 +287,7 @@ const ProfileBusinessForm = () => {
             </label>
             <Select
               options={filteredStateOptions}
-              value={selectedState} 
+              value={selectedState}
               onChange={stateChangeHandler}
               placeholder="Select state..."
               styles={customStyles}

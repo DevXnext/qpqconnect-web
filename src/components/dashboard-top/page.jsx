@@ -47,10 +47,7 @@ const DashboardTop = ({ access_token }) => {
             if (businessInfoType) {
               if (businessInfoType.BusinessType) filledFields++;
               if (businessInfoType.ModePayment) filledFields++;
-              if (businessInfoType.StartDay) filledFields++;
-              if (businessInfoType.EndDay) filledFields++;
-              if (businessInfoType.OpenAt) filledFields++;
-              if (businessInfoType.CloseAt) filledFields++;
+              if (businessInfoType.OwnershipType) filledFields++;
               if (businessInfoType.CompanyDescription && businessInfoType.CompanyDescription.length > 0) filledFields++;
             }
             if(businessInfoTax){

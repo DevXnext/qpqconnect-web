@@ -15,10 +15,10 @@ const Header = () => {
   };
   return (
     <>
-      <header className="bg-gray-200 text-black">
+      <header className=" text-black bg-transparent">
       <div className="container mx-auto flex justify-between items-center p-5">
         <div>
-          <Image src="/logo/q-black.svg" width={70} height={70} alt="Logo" />
+          <Image src="/logo/q-black.svg" width={60} height={60} alt="Logo" />
         </div>
         <div className="flex flex-row space-x-8 items-center">
           <Link

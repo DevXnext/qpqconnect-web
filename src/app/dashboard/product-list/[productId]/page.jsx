@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const ProductDetail = () => {
   const router = useRouter();
   const { productId } = router.query || {}; 
-  
+  // console.log(id)
   const [currentImage, setCurrentImage] = useState(0);
 const productImages = ["/product_image.png", "/profile.png", "/product_image.png"];
 

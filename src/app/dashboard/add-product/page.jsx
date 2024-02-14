@@ -393,21 +393,22 @@ const AddProduct = () => {
                   onDragOver={(e) => e.preventDefault()}
                   onClick={handleComplexBoxImagesClick}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-4 place-content-center">
                     {selectedComplexImages.map((complexImage) => (
-                      <div key={complexImage.id} className="relative">
-                        <Image
+                      <div key={complexImage.id} className=" flex flex-row space-x-2 justify-start items-start">
+                        < Image
                           width={200}
                           height={200}
                           src={complexImage.src}
                           alt="Selected Complex Image"
-                          className="max-h-full max-w-full object-contain cursor-pointer"
+                          className="max-h-full max-w-full object-contain hover:shadow-lg cursor-pointer shadow-sm"
                         />
                         <button
                           onClick={() =>
                             handleRemoveComplexImages(complexImage.id)
                           }
-                          className="absolute top-2 right-2 text-red-500 cursor-pointer"
+                          className=" bg-white px-2 py-1 shadow-lg rounded-full text-red-600 cursor-pointer hover:bg-red-500 
+                          hover:text-white"
                         >
                           &#x2715;
                         </button>

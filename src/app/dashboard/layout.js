@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }) {
   return (
     <html lang="en">
     <body >
+   
     <div className="flex bg-gray-50">
     <div className={` ${sidebarVisible ? "block" : "hidden"} sm:flex`}>
       {/* Sidebar visible only on larger screens */}
@@ -19,14 +20,15 @@ export default function DashboardLayout({ children }) {
 
     <div className="flex-1 flex flex-col overflow-hidden">
       <div className="">
-        <Navbar toggleSidebar={toggleSidebar}/>
+        <Navbar toggleSidebar={toggleSidebar} />
       </div>
-      <div className="flex-1 overflow-x-hidden overflow-y-auto px-0  sm:px-4">
+
+      <div className="flex-1 overflow-x-hidden overflow-y-auto px-0 sm:px-4">
         {/* Children taking full width on all screens */}
         {children}
       </div>
     </div>
   </div>
   </body>
-    </html>
+      </html>
 )}

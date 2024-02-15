@@ -9,12 +9,12 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
- 
+  const isDashboardLayout = children.type.name === "DashboardLayout";
   return (
 
     <html lang="en">
       <body className={inter.className}>
-     <Header />
+      {!isDashboardLayout && <Header/>}
         {children}
         </body>
     </html>

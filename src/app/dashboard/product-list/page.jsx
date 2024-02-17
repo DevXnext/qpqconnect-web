@@ -101,15 +101,23 @@ const ProductList = () => {
         )}
           </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-        
+       
         
           {currentProducts.map((product) => (
-            <Link href={`/dashboard/product-list/${product.id}`}
+            <Link
+            href={{
+              pathname: '/dashboard/product-list/product-detail',
+              query: {
+                productId: product.id,
+                productName: product.product_Name // Assuming product.product_Name is the correct property name for the product name
+              }
+            }}
+            
               key={product.id}
               className="border-2 rounded-lg p-4 shadow-lg flex 
          flex-col space-y-5 bg-white" 
             >
-              <div className="items-center flex flex-col w-[350px] h-[300px]">
+              <div className="items-center justify-center flex flex-col w-[350px] h-[300px]">
                 <Image
                   src={product.imageUrl}
                   width={700}

@@ -4,7 +4,7 @@ import React from 'react'
 const DashboardSubscription = () => {
   return (
    <>
-   <div className='w-full flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 bg-white'>
+   <div className='w-full flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 p-5  rounded-md bg-white'>
     <div className=' flex-col rounded-md shadow flex space-y-5 p-2 lg:basis-1/4 w-full lg:w-auto'>
         <div className='space-y-2 h-28 justify-center flex flex-col'>
         <div className='flex-row flex justify-between items-center'>

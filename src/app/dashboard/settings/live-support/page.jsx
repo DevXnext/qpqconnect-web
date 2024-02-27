@@ -1,3 +1,4 @@
+"use client"
 import withAuth from '@/app/lib/auth/page'
 import React from 'react'
 

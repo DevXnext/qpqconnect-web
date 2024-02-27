@@ -1,9 +1,8 @@
 "use client"
-
-import ProfileBusinessForm from "@/components/profile-business-form/page";
-import ProfileBusinessMedia from "@/components/profile-business-media/page";
+import ProfileBusinessForm from "./ProfileBusinessForm";
+import ProfileBusinessMedia from "./ProfileBusinessMedia";
 import React from "react";
-import ProfileMedia from "@/components/profile-media/page";
+import ProfileMedia from "./ProfileMedia";
 import withAuth from "@/app/lib/auth/page";
 
 

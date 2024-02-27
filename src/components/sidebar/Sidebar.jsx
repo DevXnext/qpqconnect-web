@@ -302,7 +302,7 @@ const Sidebar = () => {
                 isSidebarOpen ? "center" : "left"
               } hover:bg-white hover:text-black stroke-white rounded-lg hover:stroke-black py-2 px-5 w-full
             ${
-              pathname === "/dashboard/product-list"
+              pathname === "/dashboard/product-list" ||  pathname === "/dashboard/product-list/product-detail"
                 ? " bg-white stroke-black text-black"
                 : ""
             }

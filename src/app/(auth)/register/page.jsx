@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 const Register = () => {
+
   const [companyName, setCompanyName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [emailAddress, setEmailAddress] = useState("");

@@ -9,7 +9,7 @@ import {
   doc,
   query,
 } from "firebase/firestore";
-import { app } from "../../app/firebase";
+import { app } from "../../../firebase";
 import { parseCookies } from "nookies";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -135,7 +135,7 @@ const UserListing = () => {
           )  : otherUsers.length > 0 ? (
             otherUsers.map((user, index) => (
 
-              <tr key={user.id} className="border-b border-blue-gray-200">
+              <tr key={user.id || index} className="border-b border-blue-gray-200">
                 <td className="py-3 px-4"> {index + 1}</td>
                 <td className="py-3 px-4 font-semibold text-blue-800">
                 {user.userName}

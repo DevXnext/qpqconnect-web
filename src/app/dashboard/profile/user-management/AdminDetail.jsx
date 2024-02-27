@@ -11,7 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../../app/firebase";
+import { app } from "../../../firebase";
 // import cookie from "js-cookie";
 import { parseCookies } from "nookies";
 import "react-toastify/dist/ReactToastify.css";

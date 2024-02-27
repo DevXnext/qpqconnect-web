@@ -23,6 +23,11 @@ import {
   getDocs,
 } from "firebase/firestore";
 const Login = () => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Access document or perform client-side operations here
+    }
+  }, []);
   const firestore = getFirestore(app);
   const router = useRouter();
   const auth = getAuth(app);

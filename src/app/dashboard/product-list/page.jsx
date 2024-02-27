@@ -22,7 +22,7 @@ const ProductList = () => {
   const [productsPerPage] = useState(8);
   const router = useRouter();
   useEffect(() => {
-    // Retrieve user access token from cookies
+    // Retrieve user access token from cookies  
     const cookies = parseCookies();
     const userAccessToken = cookies.user_access_token;
 

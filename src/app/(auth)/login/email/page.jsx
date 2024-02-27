@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 const LoginEmail = () => {
+ 
   return (
     <>
       <div className="flex flex-row h-screen  w-full lg:flex-row">

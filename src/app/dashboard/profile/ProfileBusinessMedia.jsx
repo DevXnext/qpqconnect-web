@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 const ProfileBusinessMedia = () => {
   const storage = getStorage();
   const fileInputRef = useRef(null);
-
+ 
   // Multiple images
   const [selectedComplexImages, setSelectedComplexImages] = useState([]);
 

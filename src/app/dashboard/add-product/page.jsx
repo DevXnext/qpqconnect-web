@@ -15,7 +15,7 @@ import { parseCookies } from "nookies";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import withAuth from "@/app/lib/auth/page";
-import AutocompleteInput from "@/components/Product/auto-complete/page";
+import AutocompleteInput from "@/components/auto-complete/page";
 import { getStorage,  uploadBytes, getDownloadURL, ref, ref as storageRef, list } from "firebase/storage";
 const AddProduct = () => {
   const [selectedComplexImages, setSelectedComplexImages] = useState([]);
@@ -155,7 +155,7 @@ const AddProduct = () => {
     const QPQproductId = generateRandomProductId(productName);
 
     if (folderItems.items.length > 0) {
-      // Folder already exists, handle validation (e.g., show an alert)
+    
       toast.error('Product images with the same product name  already exist.');
       return;
     }
@@ -165,18 +165,18 @@ const AddProduct = () => {
         const imageBlob = await fetch(complexImage.src).then((response) =>
           response.blob()
         );
-
         const currentDate = new Date()
           .toISOString()
           .split("T")[0]
           .replace(/-/g, "");
+          
         filename = `${productName.slice(
           0,
           3
         )}_${currentDate}_${Date.now()}.jpg`;
 
         const imageRef = ref(storage, `${storagePath}/${filename}`);
-
+ 
         await uploadBytes(imageRef, imageBlob);
 
         const imageUrl = await getDownloadURL(imageRef);

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useRouter } from "next/navigation";
 import cookie from "js-cookie";
 
@@ -8,7 +8,7 @@ const withAuth = (WrappedComponent) => {
 
     const accessToken = cookie.get("access_token");
 
-    if (!accessToken) {
+    if (!accessToken && typeof window !== 'undefined') {
       router.push("/login");
       return null;
     }

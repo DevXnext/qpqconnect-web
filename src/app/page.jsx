@@ -1,6 +1,4 @@
 "use client";
-
-import Header from "@/components/header/page";
 import HeroSection from "@/components/hero-section/page";
 import Image from "next/image";
 import Link from "next/link";

@@ -1,10 +1,11 @@
 import React from 'react'
 import { Avatar,AvatarFallback,AvatarImage } from '@/components/ui/avatar'
+import Image from 'next/image'
 export default function NavbarDark() {
   return (
     <>
        <div className="flex justify-between w-full items-center md:px-12 px-4 py-8">
-        <img src="/logo/q-black.svg" alt="" className='w-12'/>
+        <Image width={48} height={48}  src="/logo/q-black.svg" alt="" className='w-12'/>
         <div className="flex">
             <button className="text-sm md:text-md md:px-4 py-2">About Us <span className='md:ms-4'>|</span></button>
             <button className='text-sm md:text-md rounded-3xl md:px-2 py-2'>Contact Us</button>

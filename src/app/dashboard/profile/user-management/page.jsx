@@ -1,8 +1,8 @@
 "use client";
-import withAuth from "@/app/lib/auth/page";
-import AddUser from "@/components/profile-adduser/page";
-import AdminDetails from "@/components/profile-user-admin/page";
-import UserListing from "@/components/profile-userlist/page";
+import withAuth from "../../../lib/auth/page";
+import AddUser from "./AddUser";
+import AdminDetails from "./AdminDetail";
+import UserListing from "./UserListing";
 import Link from "next/link";
 import React from "react";
 const isProUser = false; 

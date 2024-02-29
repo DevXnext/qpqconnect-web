@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import { getAuth, signOut } from "firebase/auth";
+
 import { app } from "../../app/firebase";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import cookie from "js-cookie";
@@ -32,6 +32,7 @@ const Navbar = ({ toggleSidebar }) => {
     setMenuVisible(false);
   };
   const handleLogout = async () => {
+    e.preventDefault();
     try {
       cookie.remove("access_token");
       cookie.remove("user_access_token");

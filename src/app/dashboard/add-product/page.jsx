@@ -17,7 +17,9 @@ import { toast, ToastContainer } from "react-toastify";
 import withAuth from "@/app/lib/auth/page";
 import AutocompleteInput from "@/components/auto-complete/page";
 import { getStorage,  uploadBytes, getDownloadURL, ref, ref as storageRef, list } from "firebase/storage";
+import { useRouter } from "next/navigation";
 const AddProduct = () => {
+  const router = useRouter();
   const [selectedComplexImages, setSelectedComplexImages] = useState([]);
   const complexFileInputRef = useRef(null);
   const [parentCategory, setParentCategory] = useState("");
@@ -181,7 +183,7 @@ const AddProduct = () => {
 
         const imageUrl = await getDownloadURL(imageRef);
 
-        console.log("Image uploaded successfully:", imageUrl);
+        // console.log("Image uploaded successfully:", imageUrl);
       }
       
       const db = getFirestore(app);
@@ -252,6 +254,7 @@ const AddProduct = () => {
       const productRef = collection(db, "products");
       await addDoc(productRef, productData);
       toast.success("Product Added Successfully");
+      router.push("./product-list");
     } catch (error) {
       toast.error("Failed to add product try again later!");
       console.error("Error saving product:", error);
